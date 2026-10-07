@@ -1,0 +1,415 @@
+/* ============================================================
+   VISUAL CASE ASSETS
+   Intentionally designed artifacts (good / bad / subtly flawed)
+   All cases render at fixed design sizes; minis are compact
+   abstractions of layout solutions.
+   ============================================================ */
+
+/* ---------- Case 1: overcrowded festival poster (BAD) ---------- */
+.poster {
+  position: relative; width: 100%; aspect-ratio: 2 / 3; overflow: hidden;
+  background: #f4efe2; color: #111; font-family: "Archivo", sans-serif;
+  container-type: inline-size;
+}
+.bad-poster { background: #fff7d6; border: 6px solid #e8261d; }
+
+.bad-poster .bp-star {
+  position: absolute; top: 4%; left: 4%; width: 21%; aspect-ratio: 1;
+  background: #ffd400; border: 3px solid #1f4bff; border-radius: 50%;
+  display: grid; place-items: center; text-align: center;
+  font-size: 8.5px; font-weight: 900; line-height: 1.05; color: #e8261d;
+  transform: rotate(-14deg); z-index: 5;
+}
+.bad-poster .bp-badge {
+  position: absolute; top: 6%; right: 3%; background: #1f4bff; color: #ffd400;
+  font-size: 8px; font-weight: 800; padding: 5px 7px; transform: rotate(9deg);
+  border: 2px solid #e8261d; z-index: 5; text-align: center; line-height: 1.1;
+}
+.bad-poster .bp-title {
+  position: absolute; top: 20%; left: 0; right: 0; text-align: center; z-index: 4;
+  font-size: 34px; font-weight: 900; line-height: .84; color: #e8261d;
+  -webkit-text-stroke: 1.5px #1f4bff; letter-spacing: -.04em;
+}
+.bad-poster .bp-title i { font-style: normal; font-family: "Playfair Display", serif; font-weight: 500; color: #1f4bff; -webkit-text-stroke: 0; }
+.bad-poster .bp-title u { text-decoration: none; font-size: 22px; display: block; color: #111; -webkit-text-stroke: 0; font-family: "Cairo", sans-serif; }
+.bad-poster .bp-dates {
+  position: absolute; top: 47%; left: 0; right: 0; text-align: center; z-index: 6;
+  background: #111; color: #ffd400; font-size: 11px; font-weight: 800;
+  letter-spacing: .06em; padding: 4px 0; transform: rotate(-2deg);
+}
+.bad-poster .bp-dates span { color: #ff6a3d; }
+.bad-poster .bp-line {
+  position: absolute; top: 55%; left: 0; right: 0; height: 9%;
+  background: repeating-linear-gradient(90deg, #e8261d 0 26px, #ffd400 26px 52px, #1f4bff 52px 78px);
+  z-index: 2;
+}
+.bad-poster .bp-info {
+  position: absolute; bottom: 7%; left: 3%; right: 3%; z-index: 6;
+  background: #fff; border: 2px dashed #e8261d; padding: 6px 7px;
+  font-size: 7.6px; line-height: 1.25; color: #222; text-align: justify;
+  font-family: "Inter", sans-serif;
+}
+.bad-poster .bp-info b { color: #1f4bff; }
+.bad-poster .bp-row { display: flex; justify-content: space-between; font-size: 8.5px; font-weight: 800; color: #e8261d; margin-top: 3px; }
+.bad-poster .bp-dots {
+  position: absolute; inset: 0; z-index: 1; opacity: .5;
+  background-image: radial-gradient(#1f4bff 1.2px, transparent 1.3px);
+  background-size: 13px 13px;
+}
+.bad-poster .bp-circle {
+  position: absolute; bottom: 26%; right: -8%; width: 44%; aspect-ratio: 1;
+  background: #ffd400; border-radius: 50%; z-index: 1; border: 4px solid #e8261d;
+}
+.bad-poster .bp-corner {
+  position: absolute; bottom: 3%; left: 3%; font-family: "Cairo", sans-serif;
+  font-size: 9px; font-weight: 800; color: #1f4bff; z-index: 7; transform: rotate(-6deg);
+}
+
+/* Case-1 solution minis (abstract layout diagrams) */
+.mini { position: relative; width: 100%; aspect-ratio: 3 / 4; background: #fff; overflow: hidden; }
+.mini .b { position: absolute; background: #c9c5ba; }
+.mini .ink { background: #111114; }
+.mini .acc { background: var(--accent); }
+.mini .soft { background: #e9e6dd; }
+.mini .lbl { position: absolute; font-family: var(--mono); font-size: 7px; color: #8a8a95; letter-spacing: .1em; }
+
+/* A: hierarchy restored */
+.mini-hier .h1 { left: 8%; top: 8%; width: 70%; height: 16%; }
+.mini-hier .h2 { left: 8%; top: 27%; width: 40%; height: 4%; }
+.mini-hier .h3 { left: 8%; top: 34%; width: 55%; height: 3%; background: #d8d4ca; }
+.mini-hier .h4 { left: 8%; top: 39%; width: 48%; height: 3%; background: #d8d4ca; }
+.mini-hier .h5 { left: 8%; top: 60%; width: 84%; height: 12%; background: #eee; }
+.mini-hier .h6 { left: 8%; top: 76%; width: 30%; height: 6%; }
+.mini-hier .h7 { left: 8%; top: 86%; width: 60%; height: 3%; background: #d8d4ca; }
+
+/* B: palette swap only (structure untouched) */
+.mini-color .h1 { left: 6%; top: 8%; width: 88%; height: 11%; background: #0f9d6e; }
+.mini-color .h2 { left: 6%; top: 22%; width: 88%; height: 11%; background: #7cc4a8; }
+.mini-color .h3 { left: 6%; top: 36%; width: 88%; height: 11%; background: #cfe8dd; }
+.mini-color .h4 { left: 6%; top: 50%; width: 88%; height: 11%; background: #0f9d6e; }
+.mini-color .h5 { left: 6%; top: 64%; width: 88%; height: 11%; background: #7cc4a8; }
+.mini-color .h6 { left: 6%; top: 78%; width: 88%; height: 11%; background: #cfe8dd; }
+
+/* C: everything scaled up (no hierarchy) */
+.mini-scale .h1 { left: 6%; top: 7%; width: 88%; height: 13%; background: #111114; }
+.mini-scale .h2 { left: 6%; top: 24%; width: 88%; height: 13%; background: #3a3a42; }
+.mini-scale .h3 { left: 6%; top: 41%; width: 88%; height: 13%; background: #55555f; }
+.mini-scale .h4 { left: 6%; top: 58%; width: 88%; height: 13%; background: #3a3a42; }
+.mini-scale .h5 { left: 6%; top: 75%; width: 88%; height: 13%; background: #111114; }
+
+/* D: more decoration */
+.mini-deco .h1 { left: 10%; top: 8%; width: 80%; height: 12%; }
+.mini-deco .d1 { left: 4%; top: 26%; width: 26%; height: 18%; background: #ff4d24; border-radius: 50%; }
+.mini-deco .d2 { right: 4%; top: 30%; width: 30%; height: 22%; background: #1f4bff; transform: rotate(12deg); }
+.mini-deco .d3 { left: 8%; bottom: 8%; width: 46%; height: 16%; background: #ffd400; }
+.mini-deco .d4 { right: 6%; bottom: 10%; width: 32%; height: 24%; background: #111114; border-radius: 50% 50% 0 0; }
+.mini-deco .h2 { left: 10%; top: 52%; width: 60%; height: 5%; }
+
+/* ---------- Case 2: typography poster (subtle flaws) ---------- */
+.typo-poster {
+  position: relative; width: 100%; aspect-ratio: 3 / 4; overflow: hidden;
+  background: #fbfaf7; color: #14141a; container-type: inline-size;
+  border: 1px solid #e7e3d9; padding: 7% 7% 6%;
+  display: flex; flex-direction: column;
+}
+.typo-poster .tp-kicker {
+  font-family: "IBM Plex Mono", monospace; font-size: 8.5px; letter-spacing: .34em;
+  text-transform: uppercase; color: #a09a8c;
+}
+.typo-poster .tp-head {
+  font-family: "Playfair Display", serif; font-weight: 900;
+  font-size: 46px; line-height: .92; letter-spacing: -.02em; margin-top: 6%;
+}
+.typo-poster .tp-head em { font-style: italic; font-weight: 500; }
+.typo-poster .tp-rule { height: 2px; background: #14141a; margin: 5% 0 4%; }
+.typo-poster .tp-body {
+  font-family: "Playfair Display", serif; font-size: 8.6px; line-height: 1.06;
+  text-align: justify; hyphens: auto; color: #23232b;
+}
+.typo-poster .tp-body + .tp-body { margin-top: 4px; }
+.typo-poster .tp-caps {
+  font-family: "Inter", sans-serif; font-size: 7.6px; line-height: 1.15;
+  text-transform: uppercase; letter-spacing: .02em; margin-top: 6%; color: #23232b;
+}
+.typo-poster .tp-meta {
+  margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 8px;
+  padding-top: 6%;
+}
+.typo-poster .tp-when { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 13px; letter-spacing: .3em; color: #14141a; }
+.typo-poster .tp-note { font-family: "Inter", sans-serif; font-size: 7.4px; line-height: 1.3; color: #9a9a9a; text-align: right; max-width: 46%; }
+.typo-poster .tp-venue {
+  font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px;
+  letter-spacing: .55em; text-transform: uppercase; margin-top: 3%; color: #14141a;
+}
+
+/* ---------- Case 3: color directions ---------- */
+.color-dir { width: 100%; aspect-ratio: 4 / 5; position: relative; overflow: hidden; container-type: inline-size; font-family: "Archivo", sans-serif; }
+.color-dir .cd-tag {
+  position: absolute; top: 8px; left: 8px; z-index: 9;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
+  background: #111114; color: #fff; padding: 3px 8px; border-radius: 99px;
+}
+.color-dir .cd-kicker { font-family: "IBM Plex Mono", monospace; font-size: 7.5px; letter-spacing: .3em; text-transform: uppercase; }
+.color-dir .cd-name { font-weight: 900; font-size: 27px; line-height: .95; letter-spacing: -.03em; margin-top: 6px; }
+.color-dir .cd-sub { font-size: 8.5px; margin-top: 6px; line-height: 1.4; }
+.color-dir .cd-blob { position: absolute; border-radius: 50%; }
+.color-dir .cd-pill { display: inline-block; font-size: 8px; font-weight: 800; padding: 5px 11px; border-radius: 99px; margin-top: 10px; }
+.color-dir .cd-sw { position: absolute; bottom: 9px; left: 10px; display: flex; gap: 5px; }
+.color-dir .cd-sw i { width: 15px; height: 15px; border-radius: 4px; display: block; border: 1px solid rgba(0,0,0,.14); }
+
+/* A — sage / cream / deep green (trust + natural + premium) */
+.dir-a { background: #eef1e7; color: #17352a; }
+.dir-a .cd-blob { width: 58%; aspect-ratio: 1; right: -14%; top: 16%; background: #9dbb9a; opacity: .75; }
+.dir-a .cd-blob2 { width: 30%; aspect-ratio: 1; right: 16%; top: 38%; background: #17352a; }
+.dir-a .cd-inner { position: absolute; inset: 11% 10% auto; z-index: 3; }
+.dir-a .cd-pill { background: #17352a; color: #eef1e7; }
+.dir-a .cd-sw i:nth-child(1) { background: #eef1e7; }
+.dir-a .cd-sw i:nth-child(2) { background: #9dbb9a; }
+.dir-a .cd-sw i:nth-child(3) { background: #17352a; }
+.dir-a .cd-sw i:nth-child(4) { background: #d9a441; }
+
+/* B — neon lime / hot pink / black (loud, candy-aisle) */
+.dir-b { background: #d7ff3e; color: #0b0b0b; }
+.dir-b .cd-blob { width: 70%; aspect-ratio: 1; right: -20%; top: 12%; background: #ff2d95; }
+.dir-b .cd-blob2 { width: 40%; aspect-ratio: 1; left: -10%; bottom: -8%; background: #0b0b0b; }
+.dir-b .cd-inner { position: absolute; inset: 11% 10% auto; z-index: 3; }
+.dir-b .cd-name { color: #0b0b0b; text-shadow: 2px 2px 0 #ff2d95; }
+.dir-b .cd-pill { background: #0b0b0b; color: #d7ff3e; transform: rotate(-3deg); }
+.dir-b .cd-sw i:nth-child(1) { background: #d7ff3e; }
+.dir-b .cd-sw i:nth-child(2) { background: #ff2d95; }
+.dir-b .cd-sw i:nth-child(3) { background: #0b0b0b; }
+.dir-b .cd-sw i:nth-child(4) { background: #fff; }
+
+/* C — muddy brown monochrome (dull, dated) */
+.dir-c { background: #6b5847; color: #e8dcc9; }
+.dir-c .cd-blob { width: 62%; aspect-ratio: 1; right: -16%; top: 20%; background: #7d6a56; }
+.dir-c .cd-blob2 { width: 34%; aspect-ratio: 1; right: 12%; top: 42%; background: #57473a; }
+.dir-c .cd-inner { position: absolute; inset: 11% 10% auto; z-index: 3; }
+.dir-c .cd-pill { background: #e8dcc9; color: #57473a; }
+.dir-c .cd-kicker { color: #bfae97; }
+.dir-c .cd-sw i:nth-child(1) { background: #6b5847; }
+.dir-c .cd-sw i:nth-child(2) { background: #7d6a56; }
+.dir-c .cd-sw i:nth-child(3) { background: #57473a; }
+.dir-c .cd-sw i:nth-child(4) { background: #e8dcc9; }
+
+/* ---------- Case 4: composition layouts (abstract editorial minis) ---------- */
+.layout-mini { width: 100%; aspect-ratio: 3 / 4; background: #fff; position: relative; overflow: hidden; border: 1px solid #e7e3d9; }
+.layout-mini i { position: absolute; display: block; background: #d8d4ca; }
+.layout-mini i.k { background: #111114; }
+.layout-mini i.a { background: #ff4d24; }
+.layout-mini i.g { background: #e9e6dd; }
+
+/* A: centered, symmetric, flat hierarchy */
+.lay-a .t1 { left: 22%; top: 10%; width: 56%; height: 9%; }
+.lay-a .t2 { left: 32%; top: 23%; width: 36%; height: 3%; }
+.lay-a .t3 { left: 34%; top: 28%; width: 32%; height: 3%; }
+.lay-a .m1 { left: 18%; top: 38%; width: 64%; height: 26%; }
+.lay-a .t4 { left: 30%; top: 69%; width: 40%; height: 3%; }
+.lay-a .t5 { left: 34%; top: 74%; width: 32%; height: 3%; }
+.lay-a .t6 { left: 38%; top: 84%; width: 24%; height: 4%; }
+
+/* B: asymmetric grid, strong hierarchy (strongest) */
+.lay-b .t1 { left: 8%; top: 8%; width: 52%; height: 13%; }
+.lay-b .t2 { left: 8%; top: 24%; width: 30%; height: 3%; }
+.lay-b .m1 { left: 55%; top: 8%; width: 37%; height: 40%; }
+.lay-b .t3 { left: 8%; top: 34%; width: 40%; height: 3%; }
+.lay-b .t4 { left: 8%; top: 39%; width: 34%; height: 3%; }
+.lay-b .g1 { left: 8%; top: 56%; width: 84%; height: 1.5%; background: #111114; }
+.lay-b .t5 { left: 8%; top: 62%; width: 26%; height: 7%; }
+.lay-b .t6 { left: 40%; top: 63%; width: 52%; height: 3%; }
+.lay-b .t7 { left: 40%; top: 69%; width: 44%; height: 3%; }
+.lay-b .t8 { left: 8%; top: 84%; width: 22%; height: 6%; }
+
+/* C: zigzag, uniform scale, no hierarchy */
+.lay-c .m1 { left: 8%; top: 8%; width: 40%; height: 20%; }
+.lay-c .t1 { left: 54%; top: 12%; width: 38%; height: 8%; }
+.lay-c .t2 { left: 54%; top: 23%; width: 30%; height: 3%; }
+.lay-c .m2 { left: 52%; top: 36%; width: 40%; height: 20%; }
+.lay-c .t3 { left: 8%; top: 40%; width: 38%; height: 8%; }
+.lay-c .t4 { left: 8%; top: 51%; width: 30%; height: 3%; }
+.lay-c .m3 { left: 8%; top: 66%; width: 40%; height: 20%; }
+.lay-c .t5 { left: 54%; top: 70%; width: 38%; height: 8%; }
+.lay-c .t6 { left: 54%; top: 81%; width: 30%; height: 3%; }
+
+/* D: grid kept, hierarchy inverted (image dominates, headline lost) */
+.lay-d .m1 { left: 8%; top: 8%; width: 84%; height: 46%; }
+.lay-d .t1 { left: 8%; top: 58%; width: 24%; height: 4%; }
+.lay-d .t2 { left: 8%; top: 65%; width: 46%; height: 3%; }
+.lay-d .t3 { left: 8%; top: 70%; width: 40%; height: 3%; }
+.lay-d .t4 { left: 8%; top: 78%; width: 52%; height: 3%; }
+.lay-d .t5 { left: 8%; top: 83%; width: 44%; height: 3%; }
+.lay-d .t6 { left: 70%; top: 86%; width: 22%; height: 6%; }
+
+/* ---------- Case 5: branding identity system + applications ---------- */
+.brand-system {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 16px;
+}
+.brand-system .bs-title { font-family: var(--mono); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 10px; }
+.brand-system .bs-grid { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+.bs-logo { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -.02em; color: #10233b; }
+.bs-logo i { font-style: normal; color: #c4562f; }
+.bs-sw { display: flex; gap: 6px; }
+.bs-sw span { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(0,0,0,.12); display: block; font-size: 0; }
+.bs-sw span:nth-child(1) { background: #10233b; }
+.bs-sw span:nth-child(2) { background: #f4ecdf; }
+.bs-sw span:nth-child(3) { background: #c4562f; }
+.bs-sw span:nth-child(4) { background: #8a8f7d; }
+.bs-type { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); }
+.bs-note { font-family: var(--mono); font-size: 10px; color: var(--ink-4); }
+
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.app-tile { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+.app-tile .app-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4); padding: 8px 10px; border-top: 1px solid var(--line); background: var(--paper); }
+
+/* application A — business card (on system) */
+.app-card { aspect-ratio: 8 / 5; background: #10233b; position: relative; display: flex; align-items: center; justify-content: center; }
+.app-card .bc { width: 76%; aspect-ratio: 1.75; background: #f4ecdf; border-radius: 3px; display: grid; place-items: center; box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.app-card .bc .bs-logo { font-size: 13px; }
+
+/* application B — poster with OFF-PALETTE logo (VIOLATION) */
+.app-poster { aspect-ratio: 3 / 4; background: #f4ecdf; position: relative; padding: 12px; }
+.app-poster .ap-logo { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 15px; color: #3e9b4f; letter-spacing: -.02em; }
+.app-poster .ap-logo i { font-style: normal; color: #3e9b4f; }
+.app-poster .ap-head { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 25px; line-height: .95; color: #10233b; margin-top: 14px; letter-spacing: -.03em; }
+.app-poster .ap-body { font-family: "Inter", sans-serif; font-size: 7.5px; line-height: 1.5; color: #4a5568; margin-top: 8px; }
+.app-poster .ap-foot { position: absolute; left: 12px; bottom: 12px; font-family: "IBM Plex Mono", monospace; font-size: 7px; color: #10233b; letter-spacing: .1em; }
+.app-poster .ap-arch { position: absolute; right: -18px; bottom: 26px; width: 74px; height: 74px; background: #c4562f; border-radius: 50% 50% 0 0; }
+
+/* application C — social post (on system) */
+.app-social { aspect-ratio: 1; background: #c4562f; position: relative; padding: 13px; color: #f4ecdf; }
+.app-social .as-logo { position: absolute; top: 12px; left: 13px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 12px; color: #f4ecdf; }
+.app-social .as-logo i { font-style: normal; color: #f4ecdf; opacity: .75; }
+.app-social .as-head { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 23px; line-height: .92; margin-top: 34px; letter-spacing: -.03em; }
+.app-social .as-sub { font-family: "IBM Plex Mono", monospace; font-size: 7.5px; letter-spacing: .16em; margin-top: 8px; opacity: .85; }
+
+/* application D — packaging (on system) */
+.app-pack { aspect-ratio: 3 / 4; background: #e8e2d5; position: relative; display: grid; place-items: center; }
+.app-pack .pk {
+  width: 58%; height: 74%; background: #f4ecdf; border-radius: 6px 6px 3px 3px;
+  border: 1px solid rgba(16,35,59,.25); position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.app-pack .pk::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 16%; background: #10233b; }
+.app-pack .pk .bs-logo { font-size: 11px; margin-top: 12%; }
+.app-pack .pk .pk-band { width: 100%; height: 7px; background: #c4562f; position: absolute; bottom: 20%; }
+.app-pack .pk .pk-line { font-family: "IBM Plex Mono", monospace; font-size: 6.5px; color: #10233b; letter-spacing: .1em; }
+
+/* ---------- Case 6/7: direction cards ---------- */
+.dir-card { width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+.dir-art { position: relative; aspect-ratio: 4 / 3; overflow: hidden; container-type: inline-size; }
+.dir-meta { padding: 12px 14px; }
+.dir-meta .dm-name { font-weight: 700; font-size: 14.5px; letter-spacing: -.02em; }
+.dir-meta .dm-desc { font-size: 12.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.45; }
+
+/* Case 6 — metro safety campaign directions */
+/* A: fear statistics */
+.dir-a6 { background: #0c0d10; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
+.dir-a6::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.85)),
+    repeating-linear-gradient(115deg, #23252c 0 14px, #17181d 14px 28px);
+}
+.dir-a6 .stat { position: relative; font-family: "Archivo", sans-serif; font-weight: 900; font-size: 44px; color: #ff3b30; line-height: .9; letter-spacing: -.04em; }
+.dir-a6 .stat span { display: block; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: .04em; margin-top: 7px; line-height: 1.35; }
+.dir-a6 .warn { position: relative; font-family: var(--mono); font-size: 8px; color: #ff3b30; letter-spacing: .2em; margin-bottom: 8px; }
+
+/* B: typographic signage system (strong) */
+.dir-b6 { background: #ffd400; padding: 12px; display: flex; flex-direction: column; }
+.dir-b6 .sign {
+  background: #101014; color: #ffd400; font-family: "Archivo", sans-serif; font-weight: 800;
+  font-size: 17px; line-height: 1.02; padding: 9px 10px; letter-spacing: -.02em; transform: rotate(-1.5deg);
+}
+.dir-b6 .sign.alt { background: #fff; color: #101014; transform: rotate(1deg); margin-top: 7px; font-size: 13.5px; }
+.dir-b6 .sign.mut { background: transparent; color: #101014; border: 2px solid #101014; transform: none; margin-top: 7px; font-size: 11.5px; padding: 7px 10px; }
+.dir-b6 .arrow { position: absolute; right: 9px; bottom: 9px; font-family: "Archivo", sans-serif; font-weight: 900; font-size: 26px; color: #101014; }
+
+/* C: glossy lifestyle */
+.dir-c6 { display: flex; align-items: flex-end; padding: 12px;
+  background: linear-gradient(160deg, #7fb2e5 0%, #cfe4f7 45%, #f2d9c4 100%); }
+.dir-c6 .lamp { position: absolute; top: 14%; left: 50%; transform: translateX(-50%); width: 44%; height: 34%; background: radial-gradient(circle at 50% 30%, #fff7e0, #f4c37a); border-radius: 50% 50% 46% 46%; box-shadow: 0 10px 26px rgba(255,255,255,.5); }
+.dir-c6 .ppl { position: absolute; bottom: 0; left: 0; right: 0; height: 52%; display: flex; justify-content: center; gap: 8px; align-items: flex-end; }
+.dir-c6 .ppl i { display: block; width: 21%; height: 76%; background: #4b5563; border-radius: 40% 40% 0 0; }
+.dir-c6 .ppl i:nth-child(2) { height: 92%; background: #374151; }
+.dir-c6 .cap { position: relative; background: rgba(255,255,255,.92); border-radius: 99px; padding: 5px 12px; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10.5px; color: #1f2937; z-index: 3; }
+
+/* Case 7 — luxury date brand concepts */
+/* A: marble luxury classic */
+.dir-a7 { background: #efe9e1; display: grid; place-items: center; }
+.dir-a7 .marble {
+  width: 78%; height: 62%; background: linear-gradient(120deg, #fdfcf9, #e6e0d6 40%, #f7f4ee 60%, #ddd6ca);
+  border-radius: 4px; box-shadow: 0 16px 30px -18px rgba(0,0,0,.5); position: relative; overflow: hidden;
+}
+.dir-a7 .marble::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(102deg, transparent 0 22px, rgba(160,150,135,.35) 22px 23px, transparent 23px 47px);
+}
+.dir-a7 .dates { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 6px; z-index: 3; }
+.dir-a7 .dates i { width: 17px; height: 26px; background: linear-gradient(150deg, #6b4429, #3d2415); border-radius: 46% 46% 42% 42%; box-shadow: inset -3px -4px 6px rgba(0,0,0,.45), 0 5px 8px -3px rgba(0,0,0,.5); }
+.dir-a7 .gold { position: absolute; top: 9px; left: 10px; font-family: "Playfair Display", serif; font-size: 10px; letter-spacing: .3em; color: #b08d3f; z-index: 4; text-transform: uppercase; }
+
+/* B: surreal still-life system (strong) */
+.dir-b7 { background: #141210; display: grid; place-items: center; position: relative; }
+.dir-b7 .strata {
+  width: 66%; height: 72%; position: relative;
+  background: linear-gradient(180deg, #1f1a15, #17130f);
+  box-shadow: inset 0 0 40px rgba(0,0,0,.7);
+}
+.dir-b7 .strata i { position: absolute; left: 8%; right: 8%; height: 13%; border-radius: 40px; display: block; }
+.dir-b7 .strata i:nth-child(1) { top: 8%; background: linear-gradient(90deg, #c9873f, #a86a2c); transform: rotate(-3deg); }
+.dir-b7 .strata i:nth-child(2) { top: 27%; background: linear-gradient(90deg, #7a4a24, #55331a); left: 14%; right: 14%; transform: rotate(2deg); }
+.dir-b7 .strata i:nth-child(3) { top: 46%; background: linear-gradient(90deg, #e4b872, #c9873f); left: 20%; right: 8%; transform: rotate(-1.5deg); }
+.dir-b7 .strata i:nth-child(4) { top: 65%; background: linear-gradient(90deg, #4a2f1a, #7a4a24); left: 8%; right: 20%; transform: rotate(3deg); }
+.dir-b7 .beam { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,235,190,.24) 46%, transparent 62%); }
+.dir-b7 .series { position: absolute; bottom: 9px; left: 11px; font-family: "IBM Plex Mono", monospace; font-size: 8px; color: #d9c49a; letter-spacing: .22em; text-transform: uppercase; }
+.dir-b7 .idx { position: absolute; top: 9px; right: 11px; font-family: var(--mono); font-size: 8px; color: rgba(217,196,154,.6); }
+
+/* C: kitchen lifestyle (violates constraints) */
+.dir-c7 { background: #d9cbb8; display: flex; align-items: flex-end; justify-content: center; padding: 10px;
+  background-image: linear-gradient(180deg, #cfc1ac 0 58%, #8d7a62 58% 66%, #a8977f 66%); }
+.dir-c7 .bowl { position: absolute; top: 24%; left: 50%; transform: translateX(-50%); width: 54%; height: 30%; background: radial-gradient(ellipse at 50% 30%, #f5efe4, #d8ccb9); border-radius: 50%; box-shadow: 0 12px 20px -10px rgba(0,0,0,.5); }
+.dir-c7 .hand { position: absolute; width: 46px; height: 20px; background: #e8b98f; border-radius: 40% 50% 44% 40%; top: 34%; right: 14%; transform: rotate(-18deg); box-shadow: 0 6px 12px -6px rgba(0,0,0,.5); }
+.dir-c7 .win { position: absolute; top: 8%; left: 8%; width: 30%; height: 34%; background: linear-gradient(180deg, #eef3f6, #cfdbe3); border: 4px solid #7d6c56; }
+.dir-c7 .tag { background: rgba(255,255,255,.94); padding: 5px 11px; border-radius: 3px; font-family: "Playfair Display", serif; font-size: 10.5px; font-style: italic; color: #4a3c2c; z-index: 4; }
+
+/* ---------- Case 8: near-finished poster with subtle flaws ---------- */
+.review-poster {
+  position: relative; width: 100%; aspect-ratio: 3 / 4; background: #fbfaf8; overflow: hidden;
+  container-type: inline-size; font-family: "Inter", sans-serif; color: #16161a;
+  border: 1px solid #e7e3d9; padding: 8.5%;
+}
+.review-poster .rp-logo {
+  font-family: "Archivo", sans-serif; font-weight: 900; font-size: 13px; letter-spacing: -.02em;
+  position: absolute; top: 8.5%; left: calc(8.5% + 9px); color: #16161a;
+}
+.review-poster .rp-logo i { font-style: normal; color: var(--accent, #ff4d24); }
+.review-poster .rp-kicker {
+  font-family: "IBM Plex Mono", monospace; font-size: 8.5px; letter-spacing: .3em;
+  text-transform: uppercase; color: #6f6f7a; margin-top: 15%;
+}
+.review-poster .rp-head {
+  font-family: "Playfair Display", serif; font-weight: 900; font-size: 44px;
+  line-height: .96; letter-spacing: -.025em; margin-top: 3%;
+}
+.review-poster .rp-head em { font-style: italic; font-weight: 500; }
+.review-poster .rp-body { font-size: 9.5px; line-height: 1.55; color: #3c3c45; margin-top: 5%; max-width: 78%; }
+.review-poster .rp-figure {
+  position: absolute; right: -12%; top: 34%; width: 52%; aspect-ratio: 1;
+  background: conic-gradient(from 210deg, #ff4d24, #ffb199 35%, #ff4d24 60%, #d6330f);
+  border-radius: 50%; opacity: .92;
+}
+.review-poster .rp-rule { position: absolute; left: 8.5%; right: 8.5%; bottom: 21%; height: 1px; background: #d8d4ca; }
+.review-poster .rp-foot {
+  position: absolute; bottom: 8.5%; left: calc(8.5% + 9px); right: 8.5%;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 10px;
+}
+.review-poster .rp-cta {
+  font-family: "Archivo", sans-serif; font-weight: 800; font-size: 10px; letter-spacing: .04em;
+  background: #16161a; color: #fff; padding: 8px 15px; border-radius: 16px;
+}
+.review-poster .rp-meta { font-family: "IBM Plex Mono", monospace; font-size: 8px; color: #9a9a9a; text-align: right; line-height: 1.5; letter-spacing: .04em; }
+.review-poster .rp-serial { position: absolute; top: 8.5%; right: 8.5%; font-family: var(--mono); font-size: 8px; color: #b4b0a6; letter-spacing: .12em; }
+
+/* shared helpers for option visuals */
+.thumb-frame { background: var(--paper); padding: 10px; }
+.opt-visual .option-mini .thumb-frame { padding: 8px; }
