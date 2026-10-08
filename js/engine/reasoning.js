@@ -6,35 +6,47 @@
    modestly and is stored as its own evidence for diagnosis.
    ============================================================ */
 
+const ARABIC = /[؀-ۿ]/;
+
+/** Strip Latin punctuation + Arabic diacritics; normalise alef/ya variants. */
 function normalise(text) {
   return String(text || '')
     .toLowerCase()
     .replace(/[’']/g, "'")
-    .replace(/[^a-z0-9'\s-]/g, ' ')
+    .replace(/[\u064B-\u0652\u0640]/g, '')          /* harakat + tatweel */
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
+    .replace(/[^a-z0-9؀-ۿ'\s-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
+export function isArabicText(text) { return ARABIC.test(String(text || '')); }
+
 /**
+ * Rubric selection is driven by the *text*, not global language, so the
+ * engine stays language-agnostic and both rubrics can be tested directly.
  * @returns {{score:number, max:number, ratio:number, hits:string[], missed:number, antiHits:number, tooBrief:boolean}}
  */
-export function evaluateReasoning(text, rubric) {
-  const max = rubric?.max ?? 10;
+export function evaluateReasoning(text, questionRubric) {
+  const useArabic = isArabicText(text) && questionRubric?.ar;
+  const rubric = useArabic ? { ...questionRubric, ...questionRubric.ar } : questionRubric;
+  const max = rubric?.max ?? questionRubric?.max ?? 10;
   const norm = normalise(text);
   const words = norm.split(' ').filter(Boolean);
-  const tooBrief = words.length > 0 && words.length < 12;
+  const minWords = useArabic ? 8 : 12;
+  const tooBrief = words.length > 0 && words.length < minWords;
 
   const hits = [];
   let missed = 0;
   for (const group of rubric?.required || []) {
-    const matched = group.some(syn => norm.includes(syn.toLowerCase()));
+    const matched = group.some(syn => { const n = normalise(syn); return n && norm.includes(n); });
     if (matched) hits.push(group[0]);
     else missed += 1;
   }
 
   let antiHits = 0;
   for (const group of rubric?.anti || []) {
-    if (group.some(syn => norm.includes(syn.toLowerCase()))) antiHits += 1;
+    if (group.some(syn => { const n = normalise(syn); return n && norm.includes(n); })) antiHits += 1;
   }
 
   const requiredCount = (rubric?.required || []).length;

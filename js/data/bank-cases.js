@@ -27,6 +27,14 @@ export const CASE_QUESTIONS = [
       required: [['constraint', 'studio', 'faces', 'brief'], ['system', 'extend', 'series', 'six', 'repeat', 'grammar'], ['own', 'distinct', 'differ', 'marble', 'cliché', 'cliche', 'ownable']],
       anti: [['all good', 'no difference', 'either a or b']],
       max: 14,
+      ar: {
+        required: [
+          ['قيود', 'قيد', 'استوديو', 'وجوه', 'بشري', 'موجز', 'شروط', 'محددات'],
+          ['نظام', 'يمتد', 'تمتد', 'ستة', 'ست أجزاء', 'سلسلة', 'يتكرر', 'تنفيذ', 'مفردات', 'قواعد'],
+          ['خاص', 'مميز', 'مختلف', 'رخام', 'مبتذل', 'تقليدي', 'مكرر', 'شائع'],
+        ],
+        anti: [['كلها', 'جيدة', 'لا فرق', 'كلا', 'أيهما']],
+      },
     },
   },
 
@@ -54,6 +62,13 @@ export const CASE_QUESTIONS = [
       required: [['align', 'margin', 'grid', 'baseline'], ['contrast', 'legib', 'read', 'grey', 'gray', 'wcag']],
       anti: [['no changes', 'all fine', 'taste']],
       max: 8,
+      ar: {
+        required: [
+          ['محاذاة', 'هامش', 'شبكة', 'خط أساس', 'تسوية', 'منتظم', 'مضبوط'],
+          ['تباين', 'مقروء', 'قراءة', 'رمادي', 'وضوح', 'إضاءة', 'ألوان'],
+        ],
+        anti: [['لا تغيير', 'لا شيء', 'لا تعديل', 'تمام', 'ذوق', 'جيد']],
+      },
     },
   },
 ];

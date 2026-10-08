@@ -94,6 +94,13 @@ export const CORE_QUESTIONS = [
       required: [['hierarchy', 'focal', 'entry', 'dominant', 'importance'], ['path', 'read', 'flow', 'eye']],
       anti: [['subjective', 'looks nice', 'no difference', 'equally', 'any of them']],
       max: 10,
+      ar: {
+        required: [
+          ['تسلسل', 'بصري', 'بؤر', 'بؤرة', 'رئيسي', 'مسيطر', 'دخول', 'نقطة', 'أهمية', 'ترتيب'],
+          ['مسار', 'قراءة', 'تدفق', 'عين', 'نظر', 'تتبع', 'يتابع'],
+        ],
+        anti: [['ذاتي', 'ذوق', 'جميل', 'لا فرق', 'متشابه', 'مماثل', 'أيهم']],
+      },
     },
   },
   {
@@ -177,6 +184,13 @@ export const CORE_QUESTIONS = [
       required: [['read', 'legib', 'body', 'paragraph', 'leading', 'measure'], ['print', 'size', 'pt', 'distance']],
       anti: [['all equally', 'same priority', 'subjective']],
       max: 10,
+      ar: {
+        required: [
+          ['قراءة', 'مقروء', 'جسم', 'فقرة', 'تباعد', 'سطر', 'أسطر', 'وضوح'],
+          ['طباعة', 'حجم', 'نقطة', 'مسافة', 'بعيد', 'قِرار'],
+        ],
+        anti: [['كلها', 'متساوية', 'نفس', 'أولوية', 'ذاتي']],
+      },
     },
   },
   {
@@ -264,6 +278,14 @@ export const CORE_QUESTIONS = [
       required: [['trust', 'parent', 'natural', 'organic'], ['shelf', 'stand', 'distinct', 'differ', 'candy', 'conflict'], ['premium', 'child', 'kid', 'appetite', 'appeal']],
       anti: [['just pretty', 'my favourite', 'no difference']],
       max: 12,
+      ar: {
+        required: [
+          ['ثقة', 'أهل', 'والد', 'طبيعي', 'عضوي', 'آمن'],
+          ['رف', 'متجر', 'تمييز', 'مختلف', 'حلوى', 'حلويات', 'منافس', 'ازدحام'],
+          ['فاخر', 'طفل', 'أطفال', 'شهية', 'جذب', 'إعجاب', 'شباب'],
+        ],
+        anti: [['جميل', 'مفضل', 'لا فرق', 'ممتع']],
+      },
     },
   },
   {
@@ -440,6 +462,13 @@ export const CORE_QUESTIONS = [
       required: [['own', 'distinct', 'differ', 'ownable'], ['system', 'serial', 'extend', 'repeat', 'expand', 'multiple']],
       anti: [['any would work', 'no difference']],
       max: 10,
+      ar: {
+        required: [
+          ['خاص', 'تملك', 'ملكية', 'مميز', 'مختلف', 'متفرد', 'خاصة'],
+          ['نظام', 'متسلسل', 'سلسلة', 'يمتد', 'تمتد', 'يتكرر', 'توسيع', 'متعدد', 'حلقات'],
+        ],
+        anti: [['أيهم', 'أيها', 'لا فرق', 'نفس']],
+      },
     },
   },
 
@@ -571,6 +600,14 @@ export const CORE_QUESTIONS = [
       required: [['insight', 'ignore', 'fear', 'audience', '18', 'young'], ['system', 'modular', 'extend', 'format', 'adapt'], ['own', 'distinct', 'recogn', 'metro', 'sign']],
       anti: [['all valid', 'no difference', 'depends on budget']],
       max: 12,
+      ar: {
+        required: [
+          ['رؤية', 'إدراك', 'يتجاهل', 'خوف', 'جمهور', 'صغير', 'شاب', 'شباب', 'سن'],
+          ['نظام', 'معياري', 'وحدات', 'يمتد', 'صيغة', 'تنسيق', 'تكييف'],
+          ['خاص', 'مميز', 'معروف', 'مترو', 'محطة', 'لافتة', 'هوية'],
+        ],
+        anti: [['كلها', 'صالحة', 'لا فرق', 'يعتمد', 'ميزانية', 'أيهم']],
+      },
     },
   },
   {

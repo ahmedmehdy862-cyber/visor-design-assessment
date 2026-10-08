@@ -71,15 +71,16 @@ function gateList(id, ctx) {
 function capsFor(ctx) {
   const caps = [];
   const { sc, contradictions } = ctx;
-  if (sc('concept') < 55) caps.push({ rank: R.senior, reason: 'Concept development is not yet consistent enough for strategic levels.' });
-  if (sc('artDirection') < 58) caps.push({ rank: R.lead, reason: 'Art direction judgement has not yet reached lead-level evidence.' });
-  if (sc('leadership') < 52) caps.push({ rank: R.adCandidate, reason: 'Leadership evidence is insufficient for Art Director classification.' });
-  if (sc('fundamentals') < 45) caps.push({ rank: R.mid, reason: 'Craft fundamentals remain below independent-practice level.' });
+  const add = (rank, key, reason) => caps.push({ rank, key, reason });
+  if (sc('concept') < 55) add(R.senior, 'concept', 'Concept development is not yet consistent enough for strategic levels.');
+  if (sc('artDirection') < 58) add(R.lead, 'artDirection', 'Art direction judgement has not yet reached lead-level evidence.');
+  if (sc('leadership') < 52) add(R.adCandidate, 'leadership', 'Leadership evidence is insufficient for Art Director classification.');
+  if (sc('fundamentals') < 45) add(R.mid, 'fundamentals', 'Craft fundamentals remain below independent-practice level.');
   if (ctx.rs && ctx.rs.highDifficulty !== null && ctx.rs.highDifficulty < 0.4) {
-    caps.push({ rank: R.adCandidate, reason: 'Reasoning on complex decisions is not yet sufficiently developed.' });
+    add(R.adCandidate, 'reasoning', 'Reasoning on complex decisions is not yet sufficiently developed.');
   }
   for (const c of contradictions) {
-    if (c.hard) caps.push({ rank: R.senior, reason: c.message });
+    if (c.hard) caps.push({ rank: R.senior, key: c.key, reason: c.message });
   }
   return caps;
 }
@@ -132,7 +133,7 @@ export function classify(state) {
       const high = A.score > B.score ? A : B;
       const low = A.score > B.score ? B : A;
       contradictions.push({
-        a: high.id, b: low.id, gap: Math.round(gap),
+        a: high.id, b: low.id, gap: Math.round(gap), key: `${high.id}>${low.id}`,
         hard: (high.id === 'fundamentals' && (low.id === 'artDirection' || low.id === 'campaign')),
         message: `${high.name} scores well above ${low.name} (gap ${Math.round(gap)}) — evidence suggests execution strength without matching ${low.name.toLowerCase()} ability.`,
       });
@@ -161,8 +162,10 @@ export function classify(state) {
     if (c.rank < levelRank && (!capHit || c.rank > capHit.rank)) capHit = c;
   }
   let capReason = null;
+  let capKey = null;
   if (capHit) {
     capReason = capHit.reason;
+    capKey = capHit.key;
     level = LEVELS.find(l => l.rank === capHit.rank)?.id || 'mid';
   }
 
@@ -236,7 +239,7 @@ export function classify(state) {
       : null;
 
   return {
-    level: { id: level, name: levelInfo.name, rank: levelInfo.rank, borderline, capReason },
+    level: { id: level, name: levelInfo.name, rank: levelInfo.rank, borderline, capReason, capKey },
     skills,
     bands: Object.fromEntries(BANDS.map(b => [b.id, { ...bandOk[b.id], label: b.label }])),
     tracks: { primary, secondary, all: trackScores, potential: secondaryPotential },

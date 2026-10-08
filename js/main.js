@@ -1,18 +1,25 @@
 /* ============================================================
    VISOR — application entry.
    Flow: Landing → Experience → Assessment → (Optional practical)
-        → Analysis → Results → Restart
+         → Analysis → Results → Restart
+   Renders are language-aware: every screen registers a paint
+   function that re-runs when the user switches EN ⇄ AR.
    ============================================================ */
 import { loadBank } from './data/bank.js';
 import { mountAssessment } from './ui/assessment.js';
 import { mountResults } from './ui/results.js';
 import { renderVisual } from './ui/visuals.js';
 import { LEVELS, SKILLS } from './data/skills.js';
+import { initLang, toggleLang, onLang, t, L, QL, QOpt } from './i18n/index.js';
 
+initLang();
 loadBank();
 
 const app = document.getElementById('app');
 const toast = document.getElementById('toast');
+
+let paint = renderLanding;
+onLang(() => paint());
 
 function showToast(msg) {
   toast.textContent = msg;
@@ -21,30 +28,39 @@ function showToast(msg) {
   showToast._t = setTimeout(() => toast.classList.remove('on'), 2400);
 }
 
+function skillLabel(id, field) { return L(SKILLS.find(s => s.id === id), field, 'skills'); }
+
 function topbar({ back } = {}) {
   return `
   <header class="topbar">
     <div class="wrap topbar-inner">
       <div class="brand">
         <span class="brand-mark"></span>
-        <span>VISOR<small>Visual Competency Assessment</small></span>
+        <span>VISOR<small>${t('brand.sub')}</small></span>
       </div>
       <div class="topbar-actions">
         ${back ? `<button class="btn btn-ghost btn-sm" id="backBtn">${back}</button>` : ''}
-        <a class="btn btn-ghost btn-sm" href="admin.html">Admin</a>
+        <button class="btn btn-lang btn-sm" id="langBtn" title="${t('nav.switchTitle')}">${t('nav.switch')}</button>
+        <a class="btn btn-ghost btn-sm" href="admin.html">${t('nav.admin')}</a>
       </div>
     </div>
   </header>`;
 }
 
+function wireChrome() {
+  const lb = document.getElementById('langBtn');
+  if (lb) lb.onclick = () => toggleLang();
+}
+
 /* ---------------- LANDING ---------------- */
 function renderLanding() {
-  const levels = LEVELS.map(l => `<span class="level-chip">${l.name}</span>`).join('');
+  paint = renderLanding;
+  const levels = LEVELS.map(l => `<span class="level-chip">${L(l, 'name', 'levels')}</span>`).join('');
   const skillCards = SKILLS.map((s, i) => `
     <div class="card">
-      <span class="num">${String(i + 1).padStart(2, '0')} — ${s.short}</span>
-      <h3>${s.name}</h3>
-      <p>${s.desc}</p>
+      <span class="num">${String(i + 1).padStart(2, '0')} — ${skillLabel(s.id, 'short')}</span>
+      <h3>${skillLabel(s.id, 'name')}</h3>
+      <p>${skillLabel(s.id, 'desc')}</p>
     </div>`).join('');
 
   app.innerHTML = `
@@ -52,18 +68,18 @@ function renderLanding() {
     <section class="hero">
       <div class="hero-grid"></div>
       <div class="wrap">
-        <div class="eyebrow">Professional assessment · Not a quiz</div>
-        <h1>Measure how a designer <em>thinks</em>, not what they can recite.</h1>
-        <p class="lead">A multi-stage visual assessment that evaluates composition, typography, colour, concept, art direction, campaign thinking and leadership — then classifies your <strong>professional level</strong> and <strong>career track</strong> separately.</p>
+        <div class="eyebrow">${t('hero.eyebrow')}</div>
+        <h1>${t('hero.title.a')}<em>${t('hero.title.em')}</em>${t('hero.title.b')}</h1>
+        <p class="lead">${t('hero.lead')}</p>
         <div class="hero-cta">
-          <button class="btn btn-accent btn-lg" id="startBtn">Start assessment</button>
-          <span class="qhint">~24–36 adaptive items · 8 visual case studies · 12–18 min</span>
+          <button class="btn btn-accent btn-lg" id="startBtn">${t('hero.cta')}</button>
+          <span class="qhint">${t('hero.hint')}</span>
         </div>
         <div class="metastrip">
-          <div><b>7</b><span>Levels assessed — Beginner to Art Director</span></div>
-          <div><b>6</b><span>Career tracks, scored independently</span></div>
-          <div><b>10</b><span>Competency skills with confidence scoring</span></div>
-          <div><b>8</b><span>Realistic visual case studies</span></div>
+          <div><b>${t('meta.1.b')}</b><span>${t('meta.1.s')}</span></div>
+          <div><b>${t('meta.2.b')}</b><span>${t('meta.2.s')}</span></div>
+          <div><b>${t('meta.3.b')}</b><span>${t('meta.3.s')}</span></div>
+          <div><b>${t('meta.4.b')}</b><span>${t('meta.4.s')}</span></div>
         </div>
       </div>
     </section>
@@ -71,15 +87,15 @@ function renderLanding() {
     <section class="section">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">Levels</div>
-          <h2>The classification runs deeper than a score.</h2>
-          <p>Level is derived from difficulty-banded evidence, weighted so advanced items matter more, with contradiction checks that block inflated classification. Career track is evaluated on a separate axis.</p>
+          <div class="eyebrow">${t('levels.eyebrow')}</div>
+          <h2>${t('levels.h2')}</h2>
+          <p>${t('levels.p')}</p>
         </div>
         <div class="levels-track">${levels}</div>
         <div class="grid-3 mt-40">
-          <div class="card"><span class="num">01</span><h3>Level ≠ Track</h3><p>“Mid-Level Graphic Designer — Strong Art Direction Potential” is a normal, valid result. Both axes are scored separately.</p></div>
-          <div class="card"><span class="num">02</span><h3>Adaptive difficulty</h3><p>Strong answers unlock harder items. Weak answers trigger diagnostics. The test stops once evidence is sufficient — you are not graded against a fixed ladder.</p></div>
-          <div class="card"><span class="num">03</span><h3>Reasoning is scored</h3><p>At senior stages you explain your choices. We assess hierarchy awareness, audience, brief-connection and trade-offs — not just the selected option.</p></div>
+          <div class="card"><span class="num">01</span><h3>${t('f1.h3')}</h3><p>${t('f1.p')}</p></div>
+          <div class="card"><span class="num">02</span><h3>${t('f2.h3')}</h3><p>${t('f2.p')}</p></div>
+          <div class="card"><span class="num">03</span><h3>${t('f3.h3')}</h3><p>${t('f3.p')}</p></div>
         </div>
       </div>
     </section>
@@ -87,9 +103,9 @@ function renderLanding() {
     <section class="section" style="background:var(--card);border-block:1px solid var(--line)">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">Visual case studies</div>
-          <h2>Real design artefacts — good, bad and subtly flawed.</h2>
-          <p>You will audit an overcrowded poster, diagnose typographic failures, choose a colour direction against a brief, rank compositions, catch a brand-system violation, direct a campaign, select an art-direction concept, and run a final pre-publish review.</p>
+          <div class="eyebrow">${t('cases.eyebrow')}</div>
+          <h2>${t('cases.h2')}</h2>
+          <p>${t('cases.p')}</p>
         </div>
         <div class="grid-3">
           <div class="caseframe" style="margin-top:0">${renderVisual('case1')}</div>
@@ -102,8 +118,8 @@ function renderLanding() {
     <section class="section">
       <div class="wrap">
         <div class="section-head">
-          <div class="eyebrow">Assessment areas</div>
-          <h2>Ten competency skills, each scored 0–100.</h2>
+          <div class="eyebrow">${t('areas.eyebrow')}</div>
+          <h2>${t('areas.h2')}</h2>
         </div>
         <div class="grid-3">${skillCards}</div>
       </div>
@@ -111,17 +127,18 @@ function renderLanding() {
 
     <section class="section">
       <div class="wrap" style="text-align:center">
-        <h2 style="font-size:clamp(28px,4vw,44px);letter-spacing:-.04em">Ready to find your level?</h2>
-        <p class="muted mt-16">No account required. Results are stored on this device.</p>
-        <button class="btn btn-accent btn-lg mt-24" id="startBtn2">Start assessment</button>
+        <h2 style="font-size:clamp(28px,4vw,44px);letter-spacing:-.04em">${t('close.h2')}</h2>
+        <p class="muted mt-16">${t('close.p')}</p>
+        <button class="btn btn-accent btn-lg mt-24" id="startBtn2">${t('close.cta')}</button>
       </div>
     </section>
 
     <footer class="footer"><div class="wrap row">
-      <span>VISOR — Professional Visual Competency Assessment</span>
-      <span>A competency benchmark, not a certified examination.</span>
+      <span>${t('footer.1')}</span>
+      <span>${t('footer.2')}</span>
     </div></footer>`;
 
+  wireChrome();
   document.getElementById('startBtn').onclick = renderSetup;
   document.getElementById('startBtn2').onclick = renderSetup;
 }
@@ -135,28 +152,30 @@ const EXPERIENCES = [
 ];
 
 function renderSetup() {
+  paint = renderSetup;
   let choice = null;
   app.innerHTML = `
-    ${topbar({ back: '← Home' })}
+    ${topbar({ back: t('nav.back') })}
     <section class="section">
       <div class="wrap-narrow">
-        <div class="eyebrow">Step 1 of 3 · Optional</div>
-        <h1 style="font-size:clamp(30px,4.5vw,48px);letter-spacing:-.04em;margin-top:10px">What is your experience range?</h1>
-        <p class="muted mt-16">This only sets your starting difficulty. The assessment adapts immediately from your answers — a mis-selected range will correct itself within a few items, and it is never used in scoring.</p>
+        <div class="eyebrow">${t('setup.eyebrow')}</div>
+        <h1 style="font-size:clamp(30px,4.5vw,48px);letter-spacing:-.04em;margin-top:10px">${t('setup.h1')}</h1>
+        <p class="muted mt-16">${t('setup.p')}</p>
         <div class="pick-list" id="picks">
           ${EXPERIENCES.map(e => `
             <button class="pick" data-id="${e.id}">
-              <span><b>${e.title}</b><span>${e.desc}</span></span>
+              <span><b>${t('exp.' + e.id + '.title')}</b><span>${t('exp.' + e.id + '.desc')}</span></span>
               <span class="tick"></span>
             </button>`).join('')}
         </div>
         <div class="row gap-10 mt-24" style="flex-wrap:wrap">
-          <button class="btn btn-accent" id="go" disabled>Begin assessment</button>
-          <button class="btn btn-ghost" id="skip">Skip — start at baseline</button>
+          <button class="btn btn-accent" id="go" disabled>${t('setup.go')}</button>
+          <button class="btn btn-ghost" id="skip">${t('setup.skip')}</button>
         </div>
       </div>
     </section>`;
 
+  wireChrome();
   document.getElementById('backBtn').onclick = renderLanding;
   const go = document.getElementById('go');
   document.getElementById('picks').addEventListener('click', (e) => {
@@ -172,31 +191,24 @@ function renderSetup() {
 
 /* ---------------- ANALYSIS ---------------- */
 function renderAnalyzing(finished, onComplete) {
-  const lines = [
-    'aggregating skill evidence…',
-    'estimating confidence per competency…',
-    'checking contradiction signals…',
-    'applying difficulty-banded level rubric…',
-    'scoring career-track fit…',
-    'computing Art Direction readiness…',
-    'generating diagnosis & roadmap…',
-  ];
+  paint = () => {};
+  const lines = [1, 2, 3, 4, 5, 6, 7].map(i => t('analysis.l' + i));
   app.innerHTML = `
     <div class="analyzing wrap">
       <div>
-        <div class="eyebrow">Step 3 of 3</div>
-        <h2 class="mt-8">Analysing your assessment</h2>
-        <p>${finished.stats.responses} items · ${Object.values(finished.state.skills).filter(s => s.evidence.length).length} skills covered</p>
+        <div class="eyebrow">${t('analysis.eyebrow')}</div>
+        <h2 class="mt-8">${t('analysis.h2')}</h2>
+        <p>${t('analysis.p', { n: finished.stats.responses, s: Object.values(finished.state.skills).filter(s => s.evidence.length).length })}</p>
         <div class="scanline"><i></i></div>
         <div class="scan-log" id="scanLog">${lines[0]}</div>
       </div>
     </div>`;
   let i = 0;
   const el = document.getElementById('scanLog');
-  const t = setInterval(() => {
+  const tm = setInterval(() => {
     i++;
     if (i < lines.length) { el.textContent = lines[i]; }
-    else { clearInterval(t); onComplete(); }
+    else { clearInterval(tm); onComplete(); }
   }, 430);
 }
 
@@ -219,92 +231,110 @@ const PRACTICAL_Q = {
   purpose: 'Optional practical: hierarchy repair prioritisation.',
 };
 
-function renderPractical(session, onFinish) {
-  const selected = new Set();
-  /* shuffle so the correct three are not simply the first three */
-  const shown = [...PRACTICAL_Q.options];
-  for (let i = shown.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shown[i], shown[j]] = [shown[j], shown[i]];
-  }
-  app.innerHTML = `
-    ${topbar({ back: '← Home' })}
-    <section class="section">
-      <div class="wrap-narrow">
-        <div class="eyebrow">Optional · Practical challenge</div>
-        <h1 style="font-size:clamp(26px,3.6vw,38px);letter-spacing:-.035em;margin-top:10px">Improve this poster’s hierarchy</h1>
-        <p class="muted mt-16">A practical, applied item — the kind of work you would actually do. Skip it if you prefer; it does not change which questions you have already seen.</p>
-        <div class="caseframe">
-          <div class="caseframe-head"><span class="t">${PRACTICAL_Q.title}</span><span class="eyebrow">Select ${PRACTICAL_Q.correct.length}</span></div>
-          ${renderVisual('case1')}
-        </div>
-        <div class="options" id="opts">
-          ${shown.map((o, i) => `
-            <button class="option" data-opt="${o.id}" type="button">
-              <span class="option-key">${['a','b','c','d','e','f'][i]}</span>
-              <span class="option-body"><span class="option-title">${o.title}</span><span class="option-desc">${o.desc}</span></span>
-            </button>`).join('')}
-        </div>
-        <div class="qactions">
-          <button class="btn btn-ghost" id="skipBtn">Skip challenge</button>
-          <button class="btn btn-accent" id="submitBtn" disabled>Submit &amp; finish</button>
-        </div>
-        <div class="practical mt-24">
-          <h3>Or submit your own work</h3>
-          <p class="small muted mt-8">Upload a design you have made. It is previewed locally only, never sent anywhere, and is <strong>not scored</strong> — it is kept with your result so you can compare your self-assessment against the outcome.</p>
-          <label class="uploadbox" for="fileUp" style="cursor:pointer">
-            <input type="file" id="fileUp" accept="image/*" />
-            <div id="upText">Click to choose an image (stored on this device only)</div>
-          </label>
-          <div id="preview" class="mt-16"></div>
-        </div>
-      </div>
-    </section>`;
+function createPracticalView(session, onFinish) {
+  let selected = new Set();
+  let previewUrl = null;
+  let previewName = null;
+  let order = null;
 
-  document.getElementById('backBtn').onclick = renderLanding;
-  const sync = () => {
-    document.getElementById('submitBtn').disabled = selected.size !== PRACTICAL_Q.correct.length;
-  };
-  document.getElementById('opts').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-opt]');
-    if (!b) return;
-    const id = b.dataset.opt;
-    if (selected.has(id)) selected.delete(id);
-    else if (selected.size < 3) selected.add(id);
-    else { selected.delete([...selected][0]); selected.add(id); }
-    document.querySelectorAll('[data-opt]').forEach(x => x.classList.toggle('sel', selected.has(x.dataset.opt)));
+  function render() {
+    paint = render;
+    if (!order) {
+      order = [...PRACTICAL_Q.options];
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+    }
+    app.innerHTML = `
+      ${topbar({ back: t('nav.back') })}
+      <section class="section">
+        <div class="wrap-narrow">
+          <div class="eyebrow">${t('prac.eyebrow')}</div>
+          <h1 style="font-size:clamp(26px,3.6vw,38px);letter-spacing:-.035em;margin-top:10px">${t('prac.h1')}</h1>
+          <p class="muted mt-16">${t('prac.p')}</p>
+          <div class="caseframe">
+            <div class="caseframe-head"><span class="t">${QL(PRACTICAL_Q, 'title')}</span><span class="eyebrow">${t('prac.select', { n: PRACTICAL_Q.correct.length })}</span></div>
+            ${renderVisual('case1')}
+          </div>
+          <div class="options" id="opts">
+            ${order.map((o, i) => `
+              <button class="option ${selected.has(o.id) ? 'sel' : ''}" data-opt="${o.id}" type="button">
+                <span class="option-key">${['a', 'b', 'c', 'd', 'e', 'f'][i]}</span>
+                <span class="option-body"><span class="option-title">${QOpt(PRACTICAL_Q, o.id, 'title')}</span><span class="option-desc">${QOpt(PRACTICAL_Q, o.id, 'desc')}</span></span>
+              </button>`).join('')}
+          </div>
+          <div class="qactions">
+            <button class="btn btn-ghost" id="skipBtn">${t('prac.skip')}</button>
+            <button class="btn btn-accent" id="submitBtn" disabled>${t('prac.submit')}</button>
+          </div>
+          <div class="practical mt-24">
+            <h3>${t('prac.uploadH')}</h3>
+            <p class="small muted mt-8">${t('prac.uploadP')}</p>
+            <label class="uploadbox" for="fileUp" style="cursor:pointer">
+              <input type="file" id="fileUp" accept="image/*" />
+              <div id="upText">${previewName || t('prac.uploadBox')}</div>
+            </label>
+            <div id="preview" class="mt-16">${previewUrl ? `<img src="${previewUrl}" alt="upload" style="max-height:260px;border-radius:12px;border:1px solid var(--line)" />` : ''}</div>
+          </div>
+        </div>
+      </section>`;
+
+    wireChrome();
+    document.getElementById('backBtn').onclick = renderLanding;
+    const sync = () => {
+      document.getElementById('submitBtn').disabled = selected.size !== PRACTICAL_Q.correct.length;
+    };
+    document.getElementById('opts').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-opt]');
+      if (!b) return;
+      const id = b.dataset.opt;
+      if (selected.has(id)) selected.delete(id);
+      else if (selected.size < 3) selected.add(id);
+      else { selected.delete([...selected][0]); selected.add(id); }
+      document.querySelectorAll('[data-opt]').forEach(x => x.classList.toggle('sel', selected.has(x.dataset.opt)));
+      sync();
+    });
+    document.getElementById('skipBtn').onclick = () => {
+      onFinish(null);
+    };
+    document.getElementById('submitBtn').onclick = () => {
+      session.submit(PRACTICAL_Q, [...selected], null);
+      onFinish(PRACTICAL_Q);
+    };
+    document.getElementById('fileUp').onchange = (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewName = f.name;
+      previewUrl = URL.createObjectURL(f);
+      document.getElementById('upText').textContent = previewName;
+      document.getElementById('preview').innerHTML =
+        `<img src="${previewUrl}" alt="upload" style="max-height:260px;border-radius:12px;border:1px solid var(--line)" />`;
+      showToast(t('prac.uploaded'));
+    };
     sync();
-  });
-  document.getElementById('skipBtn').onclick = () => onFinish(null);
-  document.getElementById('submitBtn').onclick = () => {
-    session.submit(PRACTICAL_Q, [...selected], null);
-    onFinish(PRACTICAL_Q);
-  };
-  document.getElementById('fileUp').onchange = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    document.getElementById('upText').textContent = f.name;
-    const url = URL.createObjectURL(f);
-    document.getElementById('preview').innerHTML =
-      `<img src="${url}" alt="Your upload" style="max-height:260px;border-radius:12px;border:1px solid var(--line)" />`;
-    showToast('Image stored on this device only');
-  };
+  }
+  return { render };
 }
 
 /* ---------------- FLOW CONTROL ---------------- */
 function startAssessment(experience) {
+  paint = () => {};  /* assessment repaints itself via its own onLang */
   mountAssessment(app, {
     experience,
     onFinish(session) {
-      renderPractical(session, () => {
+      const view = createPracticalView(session, () => {
         const finished = session.finish();
         renderAnalyzing(finished, () => renderResults(finished));
       });
+      view.render();
     },
   });
 }
 
 function renderResults(finished) {
+  paint = () => {};  /* results repaints itself via its own onLang */
   mountResults(app, { finished, onRestart: renderLanding });
 }
 

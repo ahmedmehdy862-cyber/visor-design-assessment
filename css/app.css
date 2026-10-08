@@ -389,6 +389,46 @@ textarea.reason:focus { outline: none; border-color: var(--ink); background: #ff
 }
 .uploadbox input { display: none; }
 
+/* ---------- motion ---------- */
+@keyframes anneal { from { transform: translateX(-50%); } to { transform: translateX(250%); } }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.04); opacity: 1; } }
+
+/* ---------- interaction polish ---------- */
+:where(.btn, .tab, .option, .pick, .chip, .history-chip, .skillpill) {
+  outline: 2px solid transparent; outline-offset: 2px;
+}
+:where(.btn, .tab, .option, .pick, .chip, .history-chip, .skillpill):focus-visible {
+  outline: 2px solid var(--accent); border-radius: 9px;
+}
+.progress-fill { position: relative; overflow: hidden; }
+.progress-fill.accent::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
+  width: 40%; animation: anneal 1.6s var(--ease) infinite;
+}
+.scanline i { width: 46%; background: linear-gradient(90deg, var(--accent), var(--amber)); }
+.tab { transition: color .15s, border-color .15s; }
+.tab:not(.on):hover { color: var(--ink); }
+.tabs, .skillpills { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+.history-chip { transition: border-color .15s, color .15s; }
+.history-chip:hover { border-color: var(--ink-4); color: var(--ink); }
+.road-item { transition: box-shadow .18s var(--ease), transform .18s var(--ease); }
+.road-item:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+/* ---------- results hero depth ---------- */
+.result-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 80% at 20% 20%, #000 15%, transparent 70%);
+}
+.result-hero .eyebrow::before { content: "— "; color: var(--accent); }
+.ring::after {
+  content: ""; position: absolute; inset: -14px; border-radius: 50%;
+  border: 1px dashed var(--line-2); pointer-events: none;
+}
+.ring .val b { position: relative; animation: breathe 6s var(--ease) infinite; }
+
 /* toast */
 .toast {
   position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 80px);
@@ -396,6 +436,45 @@ textarea.reason:focus { outline: none; border-color: var(--ink); background: #ff
   border-radius: 999px; opacity: 0; transition: .35s var(--ease); z-index: 100; pointer-events: none;
 }
 .toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+/* language toggle — deliberately the loudest control in the top bar */
+.btn-lang {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px;
+  transition: transform .18s var(--ease), background .18s, box-shadow .18s;
+}
+.btn-lang:hover {
+  background: var(--accent); border-color: var(--accent);
+  transform: translateY(-1px); box-shadow: 0 12px 24px -14px rgba(255, 77, 36, .75);
+}
+
+/* borderline marker beside a provisional level */
+.borderline-tag {
+  display: inline-block; margin-inline-start: 14px; vertical-align: middle;
+  font-size: 13px; font-weight: 600; color: var(--accent-ink);
+  border: 1px solid var(--accent); border-radius: 999px; padding: 3px 12px;
+  letter-spacing: .02em; background: rgba(255, 77, 36, .06);
+}
+
+/* ---------- Arabic (RTL) overrides ---------- */
+[lang="ar"] body, [lang="ar"] button, [lang="ar"] input, [lang="ar"] textarea {
+  font-family: "Cairo", var(--sans);
+}
+[lang="ar"] body { line-height: 1.78; }
+[lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3,
+[lang="ar"] .eyebrow, [lang="ar"] .brand small,
+[lang="ar"] .q-counter, [lang="ar"] .stage-label,
+[lang="ar"] .q-kicker, [lang="ar"] .case-note,
+[lang="ar"] .metastrip b, [lang="ar"] .result-level,
+[lang="ar"] .hero-stat b, [lang="ar"] .kbd, [lang="ar"] .num {
+  letter-spacing: 0;
+}
+[lang="ar"] .eyebrow, [lang="ar"] .brand small { text-transform: none; }
+[dir="rtl"] .hero h1 { max-width: none; line-height: 1.12; }
+[dir="rtl"] .options .option { text-align: right; }
+[dir="rtl"] .qactions .qhint, [dir="rtl"] .reason-box label { text-align: right; }
+[dir="rtl"] .result-track span.borderline-tag { margin-inline-start: 0; margin-inline-end: 14px; }
 
 /* footer */
 .footer { border-top: 1px solid var(--line); padding: 30px 0 44px; margin-top: 40px; color: var(--ink-4); font-size: 13px; }

@@ -413,3 +413,176 @@
 /* shared helpers for option visuals */
 .thumb-frame { background: var(--paper); padding: 10px; }
 .opt-visual .option-mini .thumb-frame { padding: 8px; }
+
+/* ============================================================
+   CRAFT UPGRADES — realism pass over the artifact set
+   ============================================================ */
+
+/* Case 1: extra competing devices (realism of the mess) */
+.bad-poster .bp-mast {
+  position: absolute; top: 2.5%; left: 50%; transform: translateX(-50%);
+  font-family: "IBM Plex Mono", monospace; font-size: 6.5px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase; color: #1f4bff; z-index: 6;
+  background: #ffd400; border: 1.5px solid #e8261d; padding: 2px 7px; white-space: nowrap;
+}
+.bad-poster .bp-artist {
+  position: absolute; right: 2%; top: 31%; z-index: 6; transform: rotate(-4deg);
+  font-family: "Archivo", sans-serif; font-weight: 900; font-size: 11px;
+  line-height: 1.08; text-align: right; color: #111; mix-blend-mode: multiply;
+}
+.bad-poster .bp-price {
+  position: absolute; left: -1%; top: 34%; z-index: 7; transform: rotate(-8deg);
+  background: #e8261d; color: #fff; text-align: center; line-height: 1.05;
+  font-family: "Archivo", sans-serif; font-weight: 900; font-size: 12px;
+  padding: 6px 9px; border: 2.5px solid #111;
+}
+.bad-poster .bp-price span {
+  display: block; font-family: "IBM Plex Mono", monospace; font-size: 5.5px;
+  font-weight: 600; letter-spacing: .12em; margin-top: 2px;
+}
+.bad-poster .bp-tip {
+  position: absolute; right: 1%; top: 51%; z-index: 7; transform: rotate(6deg);
+  font-family: "IBM Plex Mono", monospace; font-size: 7.5px; font-weight: 600;
+  letter-spacing: .1em; color: #111; background: #fff;
+  border: 1.5px dashed #1f4bff; padding: 3px 7px;
+}
+
+/* Case 3: product pouch + crop marks */
+.color-dir::before {
+  content: ""; position: absolute; top: 6px; right: 6px; width: 10px; height: 10px;
+  border-top: 1.5px solid rgba(0, 0, 0, .35); border-right: 1.5px solid rgba(0, 0, 0, .35); z-index: 10;
+}
+.color-dir::after {
+  content: ""; position: absolute; bottom: 6px; left: 6px; width: 10px; height: 10px;
+  border-bottom: 1.5px solid rgba(0, 0, 0, .35); border-left: 1.5px solid rgba(0, 0, 0, .35); z-index: 10;
+}
+.color-dir .cd-pack {
+  position: absolute; right: 7%; bottom: 5%; width: 40%; aspect-ratio: 1 / 1.22; z-index: 4;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .18));
+}
+.color-dir .cd-pack .cd-cap {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 46%; height: 15%; border-radius: 5px 5px 0 0;
+}
+.color-dir .cd-pack .cd-face {
+  position: absolute; top: 9%; left: 4%; right: 4%; bottom: 0;
+  border-radius: 14px 14px 8px 8px; display: grid; place-items: center;
+}
+.color-dir .cd-pack .cd-mark { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 15px; letter-spacing: -.03em; }
+.dir-a .cd-pack .cd-face { background: #17352a; color: #eef1e7; }
+.dir-a .cd-pack .cd-cap { background: #0e2419; }
+.dir-b .cd-pack .cd-face { background: #ff2d95; color: #fff; }
+.dir-b .cd-pack .cd-cap { background: #0b0b0b; }
+.dir-c .cd-pack .cd-face { background: #57473a; color: #e8dcc9; }
+.dir-c .cd-pack .cd-cap { background: #3a2f24; }
+
+/* Case 4: print-grade schematic minis */
+.layout-mini {
+  background-image: linear-gradient(rgba(17, 17, 20, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(17, 17, 20, .045) 1px, transparent 1px);
+  background-size: 25% 25%, 25% 25%;
+}
+.layout-mini::before {
+  content: ""; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
+  border-top: 1px solid rgba(17, 17, 20, .4); border-right: 1px solid rgba(17, 17, 20, .4);
+}
+.layout-mini::after {
+  content: ""; position: absolute; inset: 7px; border: 1px solid rgba(17, 17, 20, .12); pointer-events: none;
+}
+.mini::after { content: ""; position: absolute; inset: 5px; border: 1px dashed rgba(17, 17, 20, .18); pointer-events: none; }
+
+/* Case 2: paper texture + marginal rule */
+.typo-poster {
+  background-image: radial-gradient(rgba(0, 0, 0, .03) 1px, transparent 1.1px);
+  background-size: 9px 9px;
+}
+.typo-poster::after {
+  content: ""; position: absolute; top: 7%; bottom: 6%; right: 7%;
+  width: 1px; background: #e0dcd0;
+}
+
+/* Case 5: board lockup bar + envelope stationery */
+.brand-system .bs-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line);
+}
+.brand-system .bs-lockup { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-system .bs-lockup .bs-logo { font-size: 13px; }
+.brand-system .bs-lockup span {
+  font-family: "IBM Plex Mono", monospace; font-size: 7.5px; letter-spacing: .18em;
+  color: var(--ink-4); text-transform: uppercase; white-space: nowrap;
+}
+.brand-system .bs-scale { display: flex; align-items: baseline; gap: 6px; }
+.brand-system .bs-scale i { display: block; background: #10233b; }
+.brand-system .bs-scale .k1 { width: 14px; height: 14px; border-radius: 3px; }
+.brand-system .bs-scale .k2 { width: 9px; height: 9px; border-radius: 2.5px; }
+.brand-system .bs-scale .k3 { width: 5px; height: 5px; border-radius: 2px; }
+.brand-system .bs-mg { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 15px; color: #10233b; letter-spacing: -.02em; }
+.brand-system .bs-mg s { text-decoration: none; color: #c4562f; }
+.app-pack .pk::after {
+  content: ""; position: absolute; inset: 16% 0 0;
+  background: linear-gradient(100deg, rgba(16, 35, 59, .08), transparent 30%, rgba(0, 0, 0, .06));
+  pointer-events: none;
+}
+.app-pack .pk .pk-lid {
+  position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+  width: 26%; height: 7%; background: #c4562f; border-radius: 3px 3px 0 0;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, .22);
+}
+.app-env { aspect-ratio: 8 / 5; background: #f4ecdf; position: relative; overflow: hidden; }
+.app-env .ae-flap {
+  position: absolute; left: 0; right: 0; top: 0; height: 52%;
+  background: #efe7d6; clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.app-env .ae-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+.app-env .ae-mg { font-family: "Archivo", sans-serif; font-weight: 900; font-size: 20px; color: #10233b; }
+.app-env .ae-addr { display: flex; flex-direction: column; gap: 4px; width: 38%; }
+.app-env .ae-addr i { display: block; height: 4px; border-radius: 2px; background: rgba(16, 35, 59, .5); }
+.app-env .ae-addr i:nth-child(1) { width: 100%; }
+.app-env .ae-addr i:nth-child(2) { width: 82%; }
+.app-env .ae-addr i:nth-child(3) { width: 62%; }
+
+/* Case 6: scene props */
+.dir-a6 .a6-phone {
+  position: absolute; right: 10px; top: 10px; width: 27%; aspect-ratio: 9 / 16;
+  background: #0b0c10; border: 2px solid #2a2d36; border-radius: 6px;
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  padding: 7px 5px; box-shadow: 0 6px 12px rgba(0, 0, 0, .55); z-index: 2;
+}
+.dir-a6 .a6-phone .a6-g { height: 3px; border-radius: 2px; background: #35383f; }
+.dir-a6 .a6-phone .a6-g:first-child { width: 70%; background: #5a5f6a; }
+.dir-a6 .a6-phone b {
+  position: absolute; right: -7px; top: -7px; width: 16px; height: 16px; border-radius: 50%;
+  background: #ff3b30; color: #fff; font-family: "Archivo", sans-serif; font-weight: 900;
+  font-size: 10px; display: grid; place-items: center; box-shadow: 0 0 0 2px #0c0d10;
+}
+.dir-b6 .sign.stn {
+  font-family: "IBM Plex Mono", monospace; font-size: 8.5px; font-weight: 600;
+  letter-spacing: .24em; text-transform: uppercase; background: #101014; color: #ffd400;
+  margin-top: 0; padding: 5px 10px; transform: none; display: flex; align-items: center;
+}
+.dir-b6 .sign.stn::after { content: ""; display: inline-block; border: 3px solid transparent; border-left-color: #ffd400; margin-left: 6px; }
+
+/* Case 7: luxury seal */
+.dir-a7 .seal {
+  position: absolute; right: 8px; bottom: 8px; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid #b08d3f; color: #b08d3f; display: grid; place-items: center;
+  z-index: 5; background: rgba(239, 233, 225, .9);
+}
+.dir-a7 .seal::after {
+  content: ""; position: absolute; inset: 2.5px; border: 1px dashed rgba(176, 141, 63, .6); border-radius: 50%;
+}
+.dir-a7 .seal b { font-family: "Playfair Display", serif; font-weight: 700; font-size: 11px; }
+
+/* Case 8: press registration + printed edge */
+.review-poster .rp-cross {
+  position: absolute; top: 8%; right: 8%; width: 7px; height: 7px;
+  border-top: 1px solid #a09a8c; border-right: 1px solid #a09a8c; z-index: 6;
+}
+.review-poster .rp-cross.cr2 {
+  top: auto; right: auto; bottom: 6%; left: 8%;
+  border: 0; border-bottom: 1px solid #a09a8c; border-left: 1px solid #a09a8c;
+}
+.review-poster .rp-print {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2.5px; opacity: .25;
+  background: repeating-linear-gradient(90deg, #16161a 0 3px, transparent 3px 6px);
+}

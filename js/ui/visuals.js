@@ -13,9 +13,13 @@ function overcrowdedPoster() {
     <div class="bp-circle"></div>
     <div class="bp-star">BEST<br>MUSIC<br>2026</div>
     <div class="bp-badge">FREE<br>ENTRY<br>!!!</div>
+    <div class="bp-mast">RIVERSIDE PRESENTS · EST. 2009 · Nº 7</div>
+    <div class="bp-artist">WAVEY<br>SUKI &amp; THE TREES<br>KID MERCURY</div>
+    <div class="bp-price">$40<span>DAY PASS</span></div>
     <div class="bp-title">CITY <i>SOUND</i><br>FEST<u>مهرجان المدينة الصوتي</u></div>
     <div class="bp-dates">AUG 14–16 <span>◆</span> RIVERSIDE PARK <span>◆</span> 40+ ACTS</div>
     <div class="bp-line"></div>
+    <div class="bp-tip">GATE A · DOORS 16:00</div>
     <div class="bp-info">
       Three days of live music, food trucks, art installations and night markets featuring
       over forty local and international artists across four stages. <b>Buy tickets now at
@@ -59,6 +63,7 @@ function colorDirections() {
         <div class="cd-sub">${sub}</div>
         <div class="cd-pill">${pill}</div>
       </div>
+      <div class="cd-pack"><div class="cd-face"><span class="cd-mark">S</span></div><div class="cd-cap"></div></div>
       <div class="cd-sw"><i></i><i></i><i></i><i></i></div>
     </div>`;
   return `
@@ -91,6 +96,11 @@ function brandSystem() {
       <div class="bs-type">Archivo 800 / IBM Plex Mono 500</div>
       <div class="bs-note">Logo: navy or rust only · clearspace = cap-height</div>
     </div>
+    <div class="bs-bar">
+      <div class="bs-lockup"><div class="bs-logo">NORD<i>·</i>KAFFEE</div><span>HARBOUR ROASTERY · EST 2009</span></div>
+      <div class="bs-scale"><i class="k1"></i><i class="k2"></i><i class="k3"></i></div>
+      <div class="bs-mg">N<s>N</s></div>
+    </div>
   </div>`;
 }
 
@@ -122,12 +132,23 @@ function brandApplications() {
     <div class="app-tile">
       <div class="app-pack">
         <div class="pk">
+          <div class="pk-lid"></div>
           <div class="bs-logo">NORD<i>·</i>KAFFEE</div>
           <div class="pk-line">250 G · WHOLE BEAN</div>
           <div class="pk-band"></div>
         </div>
       </div>
       <div class="app-label">D · Packaging</div>
+    </div>
+    <div class="app-tile">
+      <div class="app-env">
+        <div class="ae-flap"></div>
+        <div class="ae-face">
+          <div class="ae-mg">N</div>
+          <div class="ae-addr"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+      <div class="app-label">E · Envelope</div>
     </div>
   </div>`;
 }
@@ -138,8 +159,8 @@ function campaignDirections() {
     <div class="case-col wide" style="max-width:300px">
       <div class="dir-card">
         <div class="dir-art ${cls}">
-          ${id === 'A' ? '<div class="warn">⚠ Platform Data</div><div class="stat">73%<span>of incidents involve phone distraction on platforms</span></div>' : ''}
-          ${id === 'B' ? '<div class="sign">Your stop<br>is not<br>where you<br>look.</div><div class="sign alt">Heads up,<br>heads up.</div><div class="sign mut">Stand behind the yellow line →</div><div class="arrow">→</div>' : ''}
+          ${id === 'A' ? '<div class="warn">⚠ Platform Data</div><div class="stat">73%<span>of incidents involve phone distraction on platforms</span></div><div class="a6-phone"><div class="a6-g"></div><div class="a6-g"></div><b>!</b></div>' : ''}
+          ${id === 'B' ? '<div class="sign stn">LINE 3 · PLATFORM 1 →</div><div class="sign">Your stop<br>is not<br>where you<br>look.</div><div class="sign alt">Heads up,<br>heads up.</div><div class="sign mut">Stand behind the yellow line →</div><div class="arrow">→</div>' : ''}
           ${id === 'C' ? '<div class="lamp"></div><div class="ppl"><i></i><i></i><i></i></div><div class="cap">Ride together. Arrive smiling.</div>' : ''}
         </div>
         <div class="dir-meta">
@@ -163,7 +184,7 @@ function artDirectionConcepts() {
     <div class="case-col wide" style="max-width:300px">
       <div class="dir-card">
         <div class="dir-art ${cls}">
-          ${id === 'A' ? '<div class="gold">Maison Khidr</div><div class="marble"><div class="dates"><i></i><i></i><i></i></div></div>' : ''}
+          ${id === 'A' ? '<div class="gold">Maison Khidr</div><div class="marble"><div class="dates"><i></i><i></i><i></i></div></div><div class="seal"><b>K</b></div>' : ''}
           ${id === 'B' ? '<div class="strata"><i></i><i></i><i></i><i></i></div><div class="beam"></div><div class="series">Terroir Series · I–VI</div><div class="idx">01/06</div>' : ''}
           ${id === 'C' ? '<div class="win"></div><div class="bowl"></div><div class="hand"></div><div class="tag">Chef-approved, daily.</div>' : ''}
         </div>
@@ -188,6 +209,8 @@ function reviewPoster() {
   <div class="review-poster" role="img" aria-label="Event poster awaiting final review">
     <div class="rp-logo">TYPE<i>&amp;</i>TASTE</div>
     <div class="rp-serial">Nº 014</div>
+    <div class="rp-cross"></div>
+    <div class="rp-cross cr2"></div>
     <div class="rp-figure"></div>
     <div class="rp-kicker">Design Meetup · Vol. 14</div>
     <div class="rp-head">Design that<br>sells, and<br>still <em>means</em><br>something</div>
@@ -197,6 +220,7 @@ function reviewPoster() {
       <div class="rp-cta">Reserve a seat</div>
       <div class="rp-meta">THU 12 NOV · 19:00<br>LOFT STUDIO, FLOOR 3</div>
     </div>
+    <div class="rp-print"></div>
   </div>`;
 }
 
