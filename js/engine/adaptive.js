@@ -140,5 +140,27 @@ export function createSession({ experience = null, startTier = 1 } = {}) {
     return state.responses.length >= EARLY_END_MIN;
   }
 
-  return { next, submit, finish, canEndEarly, isComplete, state };
+  /* ---- snapshot / restore: live "go back" support --------------------
+     The whole session (state + used) is deep-cloned at each question
+     boundary, so stepping back and re-submitting cleanly overwrites the
+     previous record instead of doubling evidence. */
+  function clone(v) {
+    return typeof structuredClone === 'function'
+      ? structuredClone(v)
+      : JSON.parse(JSON.stringify(v));
+  }
+
+  function snapshot() {
+    return { state: clone(state), used: new Set(used) };
+  }
+
+  function restore(snap) {
+    const fresh = clone(snap.state);
+    Object.keys(state).forEach(k => delete state[k]);
+    Object.assign(state, fresh);
+    used.clear();
+    for (const id of snap.used) used.add(id);
+  }
+
+  return { next, submit, finish, canEndEarly, isComplete, state, snapshot, restore };
 }

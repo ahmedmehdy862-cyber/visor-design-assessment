@@ -9,8 +9,9 @@ import { loadBank } from './data/bank.js';
 import { mountAssessment } from './ui/assessment.js';
 import { mountResults } from './ui/results.js';
 import { renderVisual } from './ui/visuals.js';
-import { LEVELS, SKILLS } from './data/skills.js';
-import { initLang, toggleLang, onLang, t, L, QL, QOpt } from './i18n/index.js';
+import { LEVELS, SKILLS, TRACKS } from './data/skills.js';
+import { loadAttempts, loadFeedback, saveFeedback } from './data/board.js';
+import { initLang, toggleLang, onLang, t, L, QL, QOpt, isAr } from './i18n/index.js';
 
 initLang();
 loadBank();
@@ -19,7 +20,8 @@ const app = document.getElementById('app');
 const toast = document.getElementById('toast');
 
 let paint = renderLanding;
-onLang(() => paint());
+document.title = t('doc.title');
+onLang(() => { document.title = t('doc.title'); paint(); });
 
 function showToast(msg) {
   toast.textContent = msg;
@@ -50,6 +52,63 @@ function topbar({ back } = {}) {
 function wireChrome() {
   const lb = document.getElementById('langBtn');
   if (lb) lb.onclick = () => toggleLang();
+}
+
+/* ---------------- GUESTBOOK / FEEDBACK (local-only) ---------------- */
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function gbDate(at) {
+  try {
+    return new Date(at).toLocaleDateString(isAr() ? 'ar' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return ''; }
+}
+function renderGuestbook() {
+  const list = loadFeedback();
+  if (!list.length) return `<p class="muted">${t('gb.empty')}</p>`;
+  return list.map(e => `
+    <div class="gb-entry">
+      <div class="gb-meta"><b>${escapeHtml(e.name || '—')}</b><span>${gbDate(e.at)}</span></div>
+      <div class="gb-text">${escapeHtml(e.text)}</div>
+    </div>`).join('');
+}
+function postGuestbook() {
+  const nameEl = document.getElementById('gbName');
+  const textEl = document.getElementById('gbMsg');
+  const name = nameEl.value.trim().slice(0, 40);
+  const text = textEl.value.trim().slice(0, 280);
+  if (!name) { showToast(t('gb.nameReq')); nameEl.focus(); return; }
+  if (!text) return;
+  saveFeedback({ name, text });
+  nameEl.value = '';
+  textEl.value = '';
+  document.getElementById('gbList').innerHTML = renderGuestbook();
+  showToast(t('gb.post'));
+}
+
+/* ---------------- PROGRESS BOARD (all attempts on this device) ---------------- */
+function attemptRows() {
+  const list = [...loadAttempts()].sort((a, b) =>
+    (b.levelRank || 0) - (a.levelRank || 0) ||
+    (b.readiness || 0) - (a.readiness || 0) ||
+    (b.at || 0) - (a.at || 0));
+  const rank = (i) => String(i + 1).padStart(2, '0');
+  return list.map((r, i) => {
+    const lvl = LEVELS.find(l => l.id === r.levelId);
+    const trk = TRACKS.find(x => x.id === r.trackId);
+    return `<div class="board-row">
+      <span class="board-rank">${rank(i)}</span>
+      <span class="board-name">${escapeHtml(r.name || (isAr() ? 'زائر' : 'Guest'))}<small>${gbDate(r.at)}</small></span>
+      <span class="board-level">${lvl ? L(lvl, 'name', 'levels') : '—'}</span>
+      <span class="board-track">${trk ? L(trk, 'name', 'tracks') : '—'}</span>
+      <span class="board-score">${Math.round(r.readiness || 0)}%</span>
+    </div>`;
+  }).join('');
+}
+function renderBoard() {
+  if (!loadAttempts().length) return `<p class="muted">${t('board.empty')}</p>`;
+  return `<div class="board">${attemptRows()}</div>`;
 }
 
 /* ---------------- LANDING ---------------- */
@@ -125,6 +184,39 @@ function renderLanding() {
       </div>
     </section>
 
+    <section class="section" style="background:var(--card);border-block:1px solid var(--line)">
+      <div class="wrap-narrow">
+        <div class="section-head">
+          <div class="eyebrow">${t('gb.eyebrow')}</div>
+          <h2>${t('gb.h2')}</h2>
+          <p>${t('gb.p')}</p>
+        </div>
+        <div id="gbList" class="gb-list">${renderGuestbook()}</div>
+        <form id="gbForm" class="gb-form">
+          <input id="gbName" maxlength="40" autocomplete="off" placeholder="${t('gb.namePh')}" aria-label="${t('gb.namePh')}" />
+          <textarea id="gbMsg" maxlength="280" rows="3" placeholder="${t('gb.msgPh')}" aria-label="${t('gb.msgPh')}"></textarea>
+          <div class="row gap-10" style="justify-content:space-between;align-items:center">
+            <span class="small muted">${t('gb.priv')}</span>
+            <button class="btn btn-accent" id="gbPost" type="submit">${t('gb.post')}</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" style="background:var(--card);border-block:1px solid var(--line)">
+      <div class="wrap-narrow">
+        <div class="section-head">
+          <div class="eyebrow">${t('board.eyebrow')}</div>
+          <h2>${t('board.h2')}</h2>
+          <p>${t('board.p')}</p>
+        </div>
+        <div id="boardHost">${renderBoard()}</div>
+        <div class="row mt-24" style="justify-content:center">
+          <button class="btn btn-accent" id="retakeBtn">${t('board.retake')}</button>
+        </div>
+      </div>
+    </section>
+
     <section class="section">
       <div class="wrap" style="text-align:center">
         <h2 style="font-size:clamp(28px,4vw,44px);letter-spacing:-.04em">${t('close.h2')}</h2>
@@ -141,6 +233,9 @@ function renderLanding() {
   wireChrome();
   document.getElementById('startBtn').onclick = renderSetup;
   document.getElementById('startBtn2').onclick = renderSetup;
+  document.getElementById('retakeBtn').onclick = renderSetup;
+  const gbForm = document.getElementById('gbForm');
+  if (gbForm) gbForm.addEventListener('submit', (e) => { e.preventDefault(); postGuestbook(); });
 }
 
 /* ---------------- SETUP ---------------- */
@@ -161,6 +256,11 @@ function renderSetup() {
         <div class="eyebrow">${t('setup.eyebrow')}</div>
         <h1 style="font-size:clamp(30px,4.5vw,48px);letter-spacing:-.04em;margin-top:10px">${t('setup.h1')}</h1>
         <p class="muted mt-16">${t('setup.p')}</p>
+        <div class="setup-field">
+          <label class="eyebrow" for="candName">${t('setup.name')}</label>
+          <input id="candName" maxlength="40" autocomplete="name" placeholder="${t('setup.namePh')}" />
+          <span class="setup-err" id="nameErr" hidden>${t('setup.nameReq')}</span>
+        </div>
         <div class="pick-list" id="picks">
           ${EXPERIENCES.map(e => `
             <button class="pick" data-id="${e.id}">
@@ -178,15 +278,26 @@ function renderSetup() {
   wireChrome();
   document.getElementById('backBtn').onclick = renderLanding;
   const go = document.getElementById('go');
+  const nameEl = document.getElementById('candName');
+  const nameErr = document.getElementById('nameErr');
+  const hasName = () => nameEl.value.trim().length > 0;
+  const refresh = () => {
+    if (hasName()) { nameEl.classList.remove('bad'); nameErr.hidden = true; }
+    go.disabled = !(hasName() && choice);
+  };
+  nameEl.addEventListener('input', refresh);
   document.getElementById('picks').addEventListener('click', (e) => {
     const b = e.target.closest('.pick');
     if (!b) return;
     choice = b.dataset.id;
     document.querySelectorAll('.pick').forEach(p => p.classList.toggle('sel', p === b));
-    go.disabled = false;
+    refresh();
   });
-  go.onclick = () => startAssessment(choice);
-  document.getElementById('skip').onclick = () => startAssessment(null);
+  go.onclick = () => { if (hasName()) startAssessment(choice, nameEl.value.trim()); };
+  document.getElementById('skip').onclick = () => {
+    if (!hasName()) { nameEl.classList.add('bad'); nameErr.hidden = false; nameEl.focus(); return; }
+    startAssessment(null, nameEl.value.trim());
+  };
 }
 
 /* ---------------- ANALYSIS ---------------- */
@@ -319,23 +430,23 @@ function createPracticalView(session, onFinish) {
 }
 
 /* ---------------- FLOW CONTROL ---------------- */
-function startAssessment(experience) {
+function startAssessment(experience, name) {
   paint = () => {};  /* assessment repaints itself via its own onLang */
   mountAssessment(app, {
     experience,
     onFinish(session) {
       const view = createPracticalView(session, () => {
         const finished = session.finish();
-        renderAnalyzing(finished, () => renderResults(finished));
+        renderAnalyzing(finished, () => renderResults(finished, name));
       });
       view.render();
     },
   });
 }
 
-function renderResults(finished) {
+function renderResults(finished, name) {
   paint = () => {};  /* results repaints itself via its own onLang */
-  mountResults(app, { finished, onRestart: renderLanding });
+  mountResults(app, { finished, onRestart: renderLanding, name });
 }
 
 renderLanding();

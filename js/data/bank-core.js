@@ -49,14 +49,14 @@ export const CORE_QUESTIONS = [
   {
     id: 'fu-03', skill: 'fundamentals', difficulty: 3, type: 'choice',
     visual: 'case1',
-    title: 'Case Study 1 — Overcrowded Poster',
-    brief: { label: 'Context', text: 'A local festival poster produced in-house. The organiser complains that “people don’t know where to look” and engagement with the poster is poor.' },
+    title: 'Case Study 1 — Festival Poster',
+    brief: { label: 'Context', text: 'A local festival poster produced in-house. It is scheduled to print this week and the organiser feels the poster is not making an impact.' },
     prompt: 'What is the most important problem to fix first?',
     options: [
-      { id: 'a', title: 'There is no single dominant focal point', desc: 'The headline, starburst, badge, date bar and body block all compete at similar intensity — the eye has no entry point.', q: 1 },
-      { id: 'b', title: 'The colour palette is too loud', desc: 'Recolour the poster with a calmer, more limited palette.', q: .55 },
-      { id: 'c', title: 'The body copy is too small', desc: 'Increase all secondary text sizes.', q: .4 },
-      { id: 'd', title: 'There are not enough elements', desc: 'Add more content to fill the empty corners.', q: .05 },
+      { id: 'a', title: 'There is no single dominant focal point', desc: '', q: 1 },
+      { id: 'b', title: 'The colour palette is too loud', desc: '', q: .55 },
+      { id: 'c', title: 'The body copy is too small', desc: '', q: .4 },
+      { id: 'd', title: 'There are not enough elements', desc: '', q: .05 },
     ],
     correct: ['a'],
     purpose: 'Prioritisation: identifies hierarchy failure as the root problem over surface styling.',
@@ -83,10 +83,10 @@ export const CORE_QUESTIONS = [
     brief: { label: 'Brief', text: 'A two-page magazine feature: headline, standfirst, one large image, three body columns, pull quote and page furniture. Same content in all four layouts.' },
     prompt: 'Which composition is strongest, and why?',
     options: [
-      { id: 'a', title: 'Layout A', desc: 'Centered and symmetrical — calm, but everything reads at once with no entry point.', v: 'layA', q: .4 },
-      { id: 'b', title: 'Layout B', desc: 'Asymmetric grid: dominant headline and image establish a clear entry, baseline rule and secondary block create a controlled reading path.', v: 'layB', q: 1 },
-      { id: 'c', title: 'Layout C', desc: 'Alternating zigzag keeps it active, but uniform element sizes flatten importance.', v: 'layC', q: .45 },
-      { id: 'd', title: 'Layout D', desc: 'Clean grid, but the image dominates and the headline is reduced to caption scale — hierarchy inverted.', v: 'layD', q: .35 },
+      { id: 'a', title: 'Layout A', desc: 'Centred and symmetrical composition.', v: 'layA', q: .4 },
+      { id: 'b', title: 'Layout B', desc: 'Asymmetric grid with a dominant image and a baseline rule.', v: 'layB', q: 1 },
+      { id: 'c', title: 'Layout C', desc: 'Alternating zigzag of uniform-size elements.', v: 'layC', q: .45 },
+      { id: 'd', title: 'Layout D', desc: 'Full grid with a large image and a reduced-scale headline.', v: 'layD', q: .35 },
     ],
     correct: ['b'],
     purpose: 'Composition judgement: entry point, reading path, tension vs symmetry.',
@@ -118,7 +118,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'fu-07', skill: 'fundamentals', difficulty: 6, type: 'choice',
     brief: { label: 'Scenario', text: 'A campaign runs across a 48-sheet billboard, a bus-shelter poster and a 1080×1080 social tile. The legal line is mandatory on all three.' },
-    prompt: 'How do you handle scale differences without losing the design?',
+    prompt: 'How do you adapt one design across these very different scales without losing its hierarchy?',
     options: [
       { id: 'a', title: 'Redesign the hierarchy per format: distance-reading hierarchy for OOH, detail hierarchy for close formats', desc: 'Same system, different information density and size ratios per context.', q: 1 },
       { id: 'b', title: 'Scale the billboard layout down proportionally', desc: 'Keep one master layout and let it shrink everywhere.', q: .4 },
@@ -170,13 +170,13 @@ export const CORE_QUESTIONS = [
     id: 'ty-04', skill: 'typography', difficulty: 4, type: 'choice',
     visual: 'case2',
     title: 'Case Study 2 — Lecture Poster',
-    brief: { label: 'Context', text: 'Printed A3 poster for a public lecture. The organiser reports that “people walk past without reading anything”. Several typographic flaws are present.' },
+    brief: { label: 'Context', text: 'Printed A3 poster for a public lecture, set entirely in one display face. The organiser reports the poster is not being read.' },
     prompt: 'What is the most critical typographic issue to fix?',
     options: [
-      { id: 'a', title: 'The body copy: display serif at ~9pt, 1.06 leading, fully justified with forced hyphenation', desc: 'At print size this block is effectively unreadable — no reading can happen at all, so every other issue is secondary.', q: 1 },
-      { id: 'b', title: 'The headline mixes roman and italic', desc: 'The italic “Narrative” breaks the style consistency of the title.', q: .5 },
-      { id: 'c', title: 'The kicker tracking is very wide', desc: 'The mono eyebrow line is letter-spaced too loosely.', q: .45 },
-      { id: 'd', title: 'The footer note is grey', desc: 'The venue note uses a lighter grey than the body.', q: .6 },
+      { id: 'a', title: 'The body copy: display serif at ~9pt, 1.06 leading, fully justified with forced hyphenation', desc: '', q: 1 },
+      { id: 'b', title: 'The headline mixes roman and italic', desc: '', q: .5 },
+      { id: 'c', title: 'The kicker tracking is very wide', desc: '', q: .45 },
+      { id: 'd', title: 'The footer note is grey', desc: '', q: .6 },
     ],
     correct: ['a'],
     purpose: 'Severity ranking: readability failure outranks stylistic inconsistency.',
@@ -196,7 +196,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'ty-05', skill: 'typography', difficulty: 5, type: 'choice',
     brief: { label: 'Brief', text: 'Bilingual identity (Arabic + Latin) for a cultural institution. The Arabic and Latin wordmarks must sit side by side in one lockup.' },
-    prompt: 'What matters most for the lockup to feel like one system?',
+    prompt: 'What matters most for the Arabic and Latin wordmarks to feel like one system?',
     options: [
       { id: 'a', title: 'Matching optical weight and vertical proportion rather than matching point size', desc: 'Arabic and Latin have different x-heights, vertical extents and stroke contrast — optical matching keeps them balanced.', q: 1 },
       { id: 'b', title: 'Setting both at the same font size', desc: 'Identical point size guarantees equality.', q: .35 },
@@ -268,9 +268,9 @@ export const CORE_QUESTIONS = [
     },
     prompt: 'Which colour direction best serves this brief?',
     options: [
-      { id: 'a', title: 'Direction A — sage / cream / deep green with a warm gold note', desc: 'Signals natural and trustworthy to parents, holds premium restraint, and separates itself from candy-bright shelf neighbours while retaining a warm accent for appeal.', q: 1 },
-      { id: 'b', title: 'Direction B — neon lime / hot pink / black', desc: 'Maximum shelf attention, but reads as confectionery energy and undercuts the trust and natural claims.', q: .35 },
-      { id: 'c', title: 'Direction C — brown monochrome earth tones', desc: 'Natural and safe, but muddy and dated: weak appetite appeal for children and poor shelf distinction.', q: .5 },
+      { id: 'a', title: 'Direction A — sage / cream / deep green with a warm gold note', desc: 'Sage, cream and deep green with a warm gold accent.', q: 1 },
+      { id: 'b', title: 'Direction B — neon lime / hot pink / black', desc: 'Neon lime, hot pink and black.', q: .35 },
+      { id: 'c', title: 'Direction C — brown monochrome earth tones', desc: 'Brown earth monochrome.', q: .5 },
     ],
     correct: ['a'],
     purpose: 'Strategic colour selection against a multi-stakeholder brief (parent trust + shelf + child appeal).',
@@ -410,7 +410,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'cn-03', skill: 'concept', difficulty: 4, type: 'choice',
     brief: { label: 'Brief', text: 'Campaign for a bank’s first-time savings product, targeting 22–28 year-olds who believe they “cannot afford to save”.' },
-    prompt: 'Which idea is least likely to be cliché and most on-brief?',
+    prompt: 'Which idea best serves the brief while avoiding the obvious cliché?',
     options: [
       { id: 'a', title: 'Reframe the objection: visualise the cost of small daily non-essentials turning into a visible sum — the money already exists', desc: 'Engages the actual barrier (perceived affordability) rather than generic future-wealth imagery.', q: 1 },
       { id: 'b', title: 'A piggy bank with a graduation cap', desc: 'Warm, familiar savings symbol.', q: .3 },
@@ -423,7 +423,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'cn-04', skill: 'concept', difficulty: 5, type: 'choice',
     brief: { label: 'Brief', text: 'Ministry of Health: reduce littering in national parks. Audience 16–30. Budget modest. Previous campaign used guilt imagery and failed.' },
-    prompt: 'Which conceptual territory should you develop?',
+    prompt: 'Which creative direction should you develop?',
     options: [
       { id: 'a', title: 'Make the invisible visible: show what stays behind and for how long, through a counter-intuitive, shareable visual device', desc: 'Shifts from scolding to discovery; suited to low-budget, high-share formats.', q: 1 },
       { id: 'b', title: 'Escalate the guilt: larger fines, darker imagery', desc: 'Previous effort simply needed more pressure.', q: .2 },
@@ -502,13 +502,13 @@ export const CORE_QUESTIONS = [
     id: 'br-03', skill: 'branding', difficulty: 4, type: 'choice',
     visual: 'case5',
     title: 'Case Study 5 — Brand Application Audit',
-    brief: { label: 'Task', text: 'Nord Kaffee identity system shown above. Four applications produced by different designers. One violates the system.' },
-    prompt: 'Which application violates the visual system?',
+    brief: { label: 'Task', text: 'Nord Kaffee identity system shown above. Four applications produced by different designers; each built against the system rules shown in the board.' },
+    prompt: 'Which application was built outside the visual system?',
     options: [
-      { id: 'a', title: 'B — the in-store poster', desc: 'The wordmark is set in green, outside the defined palette (navy or rust only), breaking colour governance.', q: 1 },
-      { id: 'b', title: 'C — the social post', desc: 'Reversed logo on the rust field is not permitted.', q: .45 },
-      { id: 'c', title: 'A — the business card', desc: 'The mark is too small to be legible at that size.', q: .5 },
-      { id: 'd', title: 'D — the packaging', desc: 'The navy header band is an unauthorised element.', q: .55 },
+      { id: 'a', title: 'B — the in-store poster', desc: '', q: 1 },
+      { id: 'b', title: 'C — the social post', desc: '', q: .45 },
+      { id: 'c', title: 'A — the business card', desc: '', q: .5 },
+      { id: 'd', title: 'D — the packaging', desc: '', q: .55 },
     ],
     correct: ['a'],
     purpose: 'System auditing: checks application against stated rules (colour governance).',
@@ -516,7 +516,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'br-04', skill: 'branding', difficulty: 5, type: 'choice',
     brief: { label: 'Scenario', text: 'The same campaign must run under three sub-brands that share one parent identity.' },
-    prompt: 'How should the identity system flex?',
+    prompt: 'How should the identity system adapt across the three sub-brands?',
     options: [
       { id: 'a', title: 'Lock the constants (logo behaviour, core type, spacing logic); flex only defined variables (accent hue, image style, layout tone)', desc: 'Recognition stays intact while sub-brands gain distinguishable voices.', q: 1 },
       { id: 'b', title: 'Give each sub-brand a completely independent look', desc: 'Distinctness matters more than family resemblance.', q: .35 },
@@ -542,7 +542,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'br-06', skill: 'branding', difficulty: 7, type: 'choice',
     brief: { label: 'Brief', text: 'A 20-year-old brand must be refreshed for a digital-first audience without alienating its existing customer base. Recognition equity is high.' },
-    prompt: 'Which strategy best balances equity and evolution?',
+    prompt: 'Which strategy best balances preserving recognition with modernising the brand?',
     options: [
       { id: 'a', title: 'Identify the irreducible recognition assets and keep them; evolve everything else — palette relationships, typography, motion and image behaviour — in a documented phased rollout', desc: 'Protects memory structure while modernising expression.', q: 1 },
       { id: 'b', title: 'Radical rebrand with a press moment', desc: 'Clear break signals change.', q: .4 },
@@ -588,11 +588,11 @@ export const CORE_QUESTIONS = [
       label: 'Campaign brief',
       text: 'Riyadh Metro safety campaign. Audience: riders 18–24. Objective: reduce platform phone-distraction incidents. Formats: OOH near stations, Instagram/TikTok cutdowns. Insight: this audience actively ignores fear-based public-service messaging.',
     },
-    prompt: 'Which direction should become the campaign’s visual direction?',
+    prompt: 'Which direction should the campaign adopt?',
     options: [
-      { id: 'a', title: 'Direction A — “The Numbers”', desc: 'Data-led warning creative with red alarm palette: credible, but lands in the fear-territory the audience already filters out.', q: .4 },
-      { id: 'b', title: 'Direction B — “Read the Room”', desc: 'Signage-derived typographic system: converts the metro’s own visual language into direct, witty messages; modular across formats and endlessly extensible.', q: 1 },
-      { id: 'c', title: 'Direction C — “Good Journeys”', desc: 'Warm lifestyle creative: likeable, but carries no safety message and could belong to any transit brand.', q: .35 },
+      { id: 'a', title: 'Direction A — “The Numbers”', desc: 'Large incident statistics over dark platform photography with a red palette.', q: .4 },
+      { id: 'b', title: 'Direction B — “Read the Room”', desc: 'Message blocks styled after metro wayfinding signage.', q: 1 },
+      { id: 'c', title: 'Direction C — “Good Journeys”', desc: 'Warm commuter scenes with a friendly tagline.', q: .35 },
     ],
     correct: ['b'],
     purpose: 'Campaign direction: insight-fit, ownability, modularity across formats.',
@@ -641,7 +641,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'ad-01', skill: 'artDirection', difficulty: 4, type: 'choice',
     brief: { label: 'Brief', text: 'A brand has five separately produced photos that “all look fine” but feel unrelated in a grid.' },
-    prompt: 'What single change most makes them a set?',
+    prompt: 'Which single change would make the five images feel like one set?',
     options: [
       { id: 'a', title: 'A shared treatment logic: consistent light direction, vantage, crop ratio and colour temperature', desc: 'Common visual grammar beats surface styling.', q: 1 },
       { id: 'b', title: 'Apply one filter to all of them', desc: 'Uniform grade unifies.', q: .6 },
@@ -810,7 +810,7 @@ export const CORE_QUESTIONS = [
   {
     id: 'le-04', skill: 'leadership', difficulty: 6, type: 'choice',
     brief: { label: 'Brief', text: 'You are taking over creative direction of a team of four with no shared standards. Deliverables vary wildly between designers.' },
-    prompt: 'What is the highest-leverage first move?',
+    prompt: 'What is the single highest-impact first move?',
     options: [
       { id: 'a', title: 'Codify a lightweight visual standard (reference board, do/don’t examples, critique criteria) and install a recurring critique ritual that enforces it', desc: 'Standards + ritual = compounding consistency.', q: 1 },
       { id: 'b', title: 'Review every file personally before release', desc: 'Direct control of output.', q: .55 },

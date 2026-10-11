@@ -28,6 +28,64 @@
   --ease: cubic-bezier(.22, .68, .28, 1);
 }
 
+.gb-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.gb-entry { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; }
+.gb-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.gb-meta span { font-family: var(--mono); font-size: 11px; color: var(--ink-4); }
+.gb-text { color: var(--ink-2); font-size: 14.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.gb-form { display: flex; flex-direction: column; gap: 10px; }
+.gb-form input, .gb-form textarea {
+  width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 11px 13px; font: inherit; color: var(--ink); resize: vertical;
+}
+.gb-form input:focus, .gb-form textarea:focus { outline: none; border-color: var(--ink-3); }
+
+/* ---------- setup: mandatory name ---------- */
+.setup-field { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 24px; }
+.setup-field input {
+  width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 12px 14px; font: inherit; color: var(--ink);
+}
+.setup-field input:focus { outline: none; border-color: var(--ink-3); }
+.setup-field input.bad { border-color: var(--red); }
+.setup-err { color: var(--red); font-size: 13px; }
+
+/* ---------- progress board ---------- */
+.board { display: flex; flex-direction: column; gap: 10px; }
+.board-row {
+  display: grid; grid-template-columns: 44px minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 14px; align-items: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 16px;
+}
+.board-rank { font-family: var(--mono); font-weight: 700; font-size: 13px; color: var(--ink-4); }
+.board-name { font-weight: 600; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+.board-name small { font-weight: 400; font-size: 12px; color: var(--ink-4); font-family: var(--mono); }
+.board-level, .board-track { color: var(--ink-3); font-size: 14px; overflow-wrap: anywhere; }
+.board-score { font-family: var(--mono); font-weight: 700; text-align: end; }
+
+/* ---------- results: candidate name ---------- */
+.result-name { font-size: 15px; color: var(--ink-2); margin-top: 6px; }
+.result-name b { font-weight: 700; }
+
+/* ---------- admin login gate ---------- */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-card {
+  width: min(420px, 100%); background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 30px 28px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.login-h { font-size: 26px; letter-spacing: -.03em; }
+.login-field {
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4);
+}
+.login-field input {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 11px 13px; font: inherit; font-family: var(--sans); letter-spacing: normal; text-transform: none; color: var(--ink);
+}
+.login-field input:focus { outline: none; border-color: var(--ink-3); }
+.login-err { color: var(--red); font-size: 13px; min-height: 18px; }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -467,10 +525,11 @@ textarea.reason:focus { outline: none; border-color: var(--ink); background: #ff
 [lang="ar"] .q-counter, [lang="ar"] .stage-label,
 [lang="ar"] .q-kicker, [lang="ar"] .case-note,
 [lang="ar"] .metastrip b, [lang="ar"] .result-level,
-[lang="ar"] .hero-stat b, [lang="ar"] .kbd, [lang="ar"] .num {
+[lang="ar"] .hero-stat b, [lang="ar"] .kbd, [lang="ar"] .num,
+[lang="ar"] .login-field {
   letter-spacing: 0;
 }
-[lang="ar"] .eyebrow, [lang="ar"] .brand small { text-transform: none; }
+[lang="ar"] .eyebrow, [lang="ar"] .brand small, [lang="ar"] .login-field { text-transform: none; }
 [dir="rtl"] .hero h1 { max-width: none; line-height: 1.12; }
 [dir="rtl"] .options .option { text-align: right; }
 [dir="rtl"] .qactions .qhint, [dir="rtl"] .reason-box label { text-align: right; }
@@ -508,6 +567,8 @@ textarea.reason:focus { outline: none; border-color: var(--ink); background: #ff
   .caseframe { padding: 14px; }
   .result-level { font-size: clamp(34px, 12vw, 62px); }
   .admin-stats { grid-template-columns: repeat(2, 1fr); }
+  .board-row { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
+  .board-level, .board-track { grid-column: 2 / -1; font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }

@@ -8,10 +8,15 @@ import { SKILLS, LEVELS } from '../data/skills.js';
 import { classify } from '../engine/classify.js';
 import { buildDiagnosis } from '../engine/diagnosis.js';
 import { buildDiagnosisAr } from '../i18n/diagnosis.ar.js';
+import { saveAttempt, saveFeedback } from '../data/board.js';
 import { t, L, Lb, onLang, isAr } from '../i18n/index.js';
 import { AR } from '../i18n/content.ar.js';
 
 const READINESS_AR = AR.readiness;
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 function nameOf(entity, table) {
   if (!entity) return '';
@@ -88,14 +93,24 @@ function skillBars(skills) {
   }).join('');
 }
 
-export function mountResults(app, { finished, onRestart }) {
+export function mountResults(app, { finished, onRestart, name }) {
   const { state, stats, confidences } = finished;
   const cls = classify(state);
   let activeTab = 'profile';
   let offLang = null;
+  const candidate = (name || '').trim();
 
   const diag = () => (isAr() ? buildDiagnosisAr(cls) : buildDiagnosis(cls));
   saveHistory(cls, diag());
+  saveAttempt({
+    name: candidate || (isAr() ? 'زائر' : 'Guest'),
+    levelId: cls.level.id,
+    levelRank: cls.level.rank,
+    trackId: cls.tracks.primary?.id || null,
+    readiness: cls.readiness.total,
+    confidence: cls.confidence,
+    at: Date.now(),
+  });
 
   function render() {
     const d = diag();
@@ -114,6 +129,7 @@ export function mountResults(app, { finished, onRestart }) {
     <section class="result-hero">
       <div class="wrap">
         <div class="eyebrow">${t('res.eyebrow')}</div>
+        ${candidate ? `<div class="result-name" id="resultName">${t('res.forName', { n: esc(candidate) })}</div>` : ''}
         <div class="result-level">${nameOf(level, 'levels')}${level.borderline ? `<span class="borderline-tag">${t('res.borderline')}</span>` : ''}</div>
         <div class="result-track">${t('res.trackPrimary', { n: `<b>${nameOf(track, 'tracks') || (isAr() ? 'مصمم بصري' : 'Visual Designer')}</b>` })}${secondary ? t('res.trackSecondary', { n: nameOf(secondary, 'tracks') }) : ''}${potential ? t('res.trackPotential', { l: potential.label, n: potential.note }) : ''}</div>
         <div class="hero-stats">
@@ -265,6 +281,18 @@ export function mountResults(app, { finished, onRestart }) {
         <button class="btn btn-ghost" id="printBtn">${t('btn.print')}</button>
         <a class="btn btn-ghost" href="admin.html">${t('nav.admin')}</a>
       </div>
+      <div class="listcard mt-16" style="max-width:640px">
+        <h3>${t('res.feedbackH')}</h3>
+        <p class="small muted mt-8">${t('res.feedbackP')}</p>
+        <form id="fbForm" class="gb-form mt-16">
+          <input id="fbName" maxlength="40" autocomplete="name" value="${esc(candidate)}" placeholder="${t('gb.namePh')}" aria-label="${t('gb.namePh')}" />
+          <textarea id="fbMsg" maxlength="280" rows="3" placeholder="${t('gb.msgPh')}" aria-label="${t('gb.msgPh')}"></textarea>
+          <div class="row gap-10" style="justify-content:space-between;align-items:center">
+            <span class="small muted" id="fbOut"></span>
+            <button class="btn btn-accent" type="submit">${t('gb.post')}</button>
+          </div>
+        </form>
+      </div>
     </div>
     <footer class="footer"><div class="wrap row">
       <span>${t('footer.1')}</span>
@@ -285,6 +313,19 @@ export function mountResults(app, { finished, onRestart }) {
       onRestart();
     });
     document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+    const fbForm = document.getElementById('fbForm');
+    if (fbForm) fbForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nm = document.getElementById('fbName').value.trim().slice(0, 40);
+      const tx = document.getElementById('fbMsg').value.trim().slice(0, 280);
+      const out = document.getElementById('fbOut');
+      if (!nm) { out.textContent = t('gb.nameReq'); return; }
+      if (!tx) { out.textContent = t('res.feedbackReq'); return; }
+      saveFeedback({ name: nm, text: tx });
+      document.getElementById('fbMsg').value = '';
+      out.textContent = t('res.feedbackThanks');
+    });
   }
 
   offLang = onLang(render);

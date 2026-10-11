@@ -80,10 +80,14 @@ ok($$('.level-chip').length === 7, `landing lists all 7 levels (${$$('.level-chi
 
 /* 2. Setup */
 $('#startBtn').click();
+ok($('#candName'), 'setup asks for a candidate name');
 ok($$('.pick').length === 4, 'setup offers 4 experience ranges');
 ok($('#go').disabled, 'Begin disabled until a range is picked');
 $$('.pick')[2].click();
-ok(!$('#go').disabled, 'Begin enabled after picking a range');
+ok($('#go').disabled, 'Begin stays disabled without a name');
+$('#candName').value = 'Smoke Tester';
+$('#candName').dispatchEvent(new window.Event('input', { bubbles: true }));
+ok(!$('#go').disabled, 'Begin enabled after a range and a name');
 $('#go').click();
 
 /* 3. Assessment */
@@ -94,7 +98,21 @@ ok($$('#opts [data-opt]').length >= 3, `options render (${$$('#opts [data-opt]')
 ok($('#qCounter').textContent.includes('of up to 36'), 'question counter shows the cap');
 ok($('#endBtn'), 'early-end control present');
 ok($('#endBtn').disabled, 'early-end locked until enough items are answered');
+ok($('#backBtn') && $('#backBtn').disabled, 'back control present and locked on the first question');
 ok($('#fill').style.width, 'progress bar initialised');
+
+/* in-assessment language toggle: switch in place, keep the question */
+ok($('#qLangBtn'), 'in-assessment language toggle present');
+const langCounter = $('#qCounter').textContent;
+const langOptCount = $$('#opts [data-opt]').length;
+$('#qLangBtn').click();
+await sleep(10);
+ok(/[\u0600-\u06FF]/.test($('#qCounter').textContent), 'assessment switches to Arabic in place');
+ok($$('#opts [data-opt]').length === langOptCount, 'same options render after switching language');
+$('#qLangBtn').click();
+await sleep(10);
+ok($('#qCounter').textContent === langCounter, 'assessment switches back to English without advancing');
+ok($('#qLangBtn').textContent.trim().length > 0, 'toggle label refreshes after switching');
 
 /* keyboard interaction (defensive: the first item may be multi-select) */
 const key = (k) => window.document.dispatchEvent(new window.KeyboardEvent('keydown', { key: k, bubbles: true }));
@@ -117,6 +135,17 @@ if (!isMultiNow()) {
     key('ArrowRight');
     await sleep(10);
     ok($('#qCounter').textContent !== n2, 'ArrowRight advances to the next question');
+
+    /* go back one step and verify full restoration */
+    const n3 = $('#qCounter').textContent;
+    ok(!$('#backBtn').disabled, 'back unlocks once a previous question exists');
+    key('ArrowLeft');
+    await sleep(10);
+    ok($('#qCounter').textContent === n2, 'ArrowLeft steps back to the previous question');
+    ok($$('#opts [data-opt].sel').length >= 1, 'previous selection is restored after going back');
+    key('ArrowRight');
+    await sleep(10);
+    ok($('#qCounter').textContent === n3, 're-submitting the restored answer advances again');
   }
 } else {
   let guard = 2;
@@ -175,6 +204,7 @@ for (let i = 0; i < 60 && !$('.result-hero'); i++) await sleep(100);
 
 /* 6. Results */
 ok($('.result-hero'), 'results hero rendered');
+ok(($('#resultName')?.textContent || '').includes('Smoke Tester'), 'results show the candidate name');
 ok(/(Beginner|Junior|Mid-Level|Senior|Lead|Art Director)/.test($('.result-level')?.textContent || ''),
   `level classified: "${$('.result-level')?.textContent?.trim().slice(0, 40)}"`);
 ok($('.result-track')?.textContent.includes('track'), 'career track rendered');
@@ -202,9 +232,38 @@ $('.tab[data-tab="evidence"]').click();
 ok($$('.history-chip').length > 10, `response log rendered (${$$('.history-chip').length} chips)`);
 ok($$('.listcard').length >= 2, 'evidence detail cards rendered');
 
+/* feedback form on results — name is mandatory */
+ok($('#fbForm') && $('#fbName') && $('#fbMsg'), 'results offer a feedback form');
+$('#fbMsg').value = 'Rendered feedback note.';
+$('#fbName').value = '';
+$('#fbForm').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+ok(($('#fbOut').textContent || '').length > 0 && $('#fbMsg').value !== '', 'feedback blocked without a name');
+$('#fbName').value = 'Smoke Tester';
+$('#fbForm').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+ok($('#fbMsg').value === '', 'feedback posts once a name is present');
+
 /* restart */
 $('#restart').click();
 ok($('#startBtn'), 'restart returns to landing');
+
+/* progress board aggregates the completed attempt */
+ok($$('.board-row').length >= 1, `progress board lists attempts (${$$('.board-row').length})`);
+ok(($$('.board-row')[0].textContent || '').includes('Smoke Tester'), 'board shows the candidate name');
+ok($('#retakeBtn'), 'board offers a retake action');
+
+/* guestbook */
+ok($('#gbForm') && $('#gbName') && $('#gbMsg'), 'guestbook form present on landing');
+$('#gbName').value = 'Smoke Tester';
+$('#gbMsg').value = 'Back-nav note — يارب تنجح.';
+$('#gbPost').click();
+await sleep(10);
+ok($$('.gb-entry').length >= 1, 'guestbook entry rendered after posting');
+ok(($$('.gb-entry')[0].textContent || '').includes('Smoke Tester'), 'newest entry is the one just posted');
+ok(($$('.gb-entry')[0].textContent || '').includes('يارب'), 'entry text is escaped and displayed');
+const gbN = $$('.gb-entry').length;
+$('#langBtn').click();
+await sleep(10);
+ok($$('.gb-entry').length === gbN, 'guestbook survives a language re-render');
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed ? 1 : 0);

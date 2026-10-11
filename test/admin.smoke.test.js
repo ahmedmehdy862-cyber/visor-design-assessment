@@ -36,6 +36,18 @@ await import(pathToFileURL(path.join(root, 'js', 'admin.js')).href + `?t=${Date.
 
 console.log('\nVISOR admin panel smoke test\n');
 
+/* auth gate */
+ok($('#loginForm'), 'login gate shown before authentication');
+ok(!$('#adminBody'), 'admin body hidden until signed in');
+$('#lgUser').value = 'admin';
+$('#lgPass').value = 'nope';
+$('#loginForm').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+ok(!$('#adminBody') && $('#lgErr').textContent.length > 0, 'wrong credentials are rejected');
+$('#lgUser').value = 'admin';
+$('#lgPass').value = 'visor2026';
+$('#loginForm').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+ok($('#adminBody'), 'admin body mounted after sign-in');
+
 /* structure */
 ok($('#adminBody'), 'admin body mounted');
 ok($$('.admin-stats > div').length === 6, `stats strip renders (${$$('.admin-stats > div').length} tiles)`);
@@ -59,6 +71,17 @@ $('#fText').value = '';
 $('#fSkill').value = ''; $('#fSkill').dispatchEvent(new window.Event('change', { bubbles: true }));
 $('#fDiff').value = ''; $('#fDiff').dispatchEvent(new window.Event('change', { bubbles: true }));
 $('#fText').dispatchEvent(new window.Event('input', { bubbles: true }));
+
+const allRows = $$('.admin-row').length;
+$('#fType').value = 'choice';
+$('#fType').dispatchEvent(new window.Event('change', { bubbles: true }));
+ok($$('.admin-row').length === allRows - 1, 'type filter: single-choice excludes only the multi item');
+$('#fType').value = 'multi';
+$('#fType').dispatchEvent(new window.Event('change', { bubbles: true }));
+ok($$('.admin-row').length === 1 && $$('.admin-row')[0].querySelector('.rtype').textContent === 'MULTI',
+  'type filter: multi-select narrows to exactly 1');
+$('#fType').value = '';
+$('#fType').dispatchEvent(new window.Event('change', { bubbles: true }));
 
 /* select + edit */
 $('.admin-row').click();
@@ -111,6 +134,11 @@ ok($$('.admin-row').length === before, 'question deleted');
 $('#resetBtn').click();
 ok(!window.localStorage.getItem('visor.bank'), 'reset clears the stored override');
 ok(!$('.admin-errors'), 'validation clean after reset');
+
+/* sign out */
+$('#logoutBtn').click();
+ok($('#loginForm'), 'sign out returns to the login gate');
+ok(!$('#adminBody'), 'admin body removed after sign out');
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
 process.exit(failed ? 1 : 0);

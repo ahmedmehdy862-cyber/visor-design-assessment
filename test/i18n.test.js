@@ -48,9 +48,14 @@ ok(QL(heated, 'prompt') !== byId['fu-05'].prompt, 'QL() switches prompt to Arabi
 ok(QL(heated, 'prompt').length > 5, 'Arabic prompt is real text');
 ok(QOpt(heated, 'b', 'title') === 'التركيب ب', 'QOpt() returns Arabic title');
 ok(QL(heated, 'title') === 'دراسة الحالة 4 — تصميم الصفحات', 'QL() localizes case title');
+ok(QL(byId['ad-01'], 'brief').text.includes('غير مترابطة'), 'ad-01 Arabic brief preserves the unrelated-in-grid premise');
+ok(/[\u0600-\u06FF]/.test(QOpt(byId['pr-04'], 'c', 'title')), 'pr-04 option c has Arabic text');
+ok(/[\u0600-\u06FF]/.test(QOpt(byId['pr-04'], 'd', 'title')), 'pr-04 option d has Arabic text');
 ok(L(LEVELS.find(l => l.id === 'artDirector'), 'name', 'levels') === 'مدير فني', 'L() localizes level name');
 ok(L(TRACKS.find(t2 => t2.id === 'social'), 'name', 'tracks') === 'مصمم سوشيال ميديا', 'L() localizes track name');
 ok(t('meta.1.s').includes('مستويات'), 'meta text localized');
+ok(t('adm.save') !== 'adm.save' && /[\u0600-\u06FF]/.test(t('adm.save')), 'admin chrome resolves in Arabic');
+ok(t('adm.imported', { n: 5 }).includes('5'), 'admin toast interpolates in Arabic');
 
 /* fallback when no Arabic overlay exists for a question */
 const cn01 = byId['cn-01'];
@@ -133,9 +138,15 @@ ok(window.document.documentElement.lang === 'ar', 'toggle returns to Arabic for 
 /* drive into setup (Arabic) */
 $('#startBtn').click();
 ok($('#picks'), 'setup screen reached');
+ok($('#candName'), 'setup asks for the candidate name');
 ok($('#picks').querySelectorAll('.pick').length === 4, 'four experience options rendered');
 ok($('.section h1').textContent.includes('نطاق خبرتك'), 'setup heading localized');
 ok($('#picks .pick b').textContent.includes('جديد في التصميم'), 'experience option localized');
+
+/* name is mandatory: skipping without it must not advance */
+$('#skip').click();
+ok($('#picks'), 'setup blocks skip until a name is entered');
+$('#candName').value = 'مرشح تجريبي';
 
 /* skip into the assessment — first question must paint in Arabic */
 $('#skip').click();

@@ -8,7 +8,7 @@
 import { createSession, MAX_QUESTIONS, EARLY_END_MIN } from '../engine/adaptive.js';
 import { SKILLS } from '../data/skills.js';
 import { renderVisual, renderOptionVisual } from './visuals.js';
-import { t, L, QL, QOpt, Ls2, onLang } from '../i18n/index.js';
+import { t, L, QL, QOpt, Ls2, onLang, toggleLang } from '../i18n/index.js';
 
 const KEYS = ['a', 'b', 'c', 'd', 'e', 'f'];
 
@@ -43,6 +43,9 @@ export function mountAssessment(app, { experience, onFinish }) {
   let reasonDraft = '';
   let locked = false;
   let offLang = null;
+  let frame = null;          /* per-question snapshot for "go back" */
+  let history = [];          /* stack of answered-question records */
+  let restoreShown = false;  /* keep the exact order a restored question had */
 
   app.innerHTML = `
     <div class="assess">
@@ -54,7 +57,9 @@ export function mountAssessment(app, { experience, onFinish }) {
               <span class="q-counter" id="qCounter"></span>
             </div>
             <div class="row gap-10">
+              <button class="btn btn-lang btn-sm" id="qLangBtn" title="${t('nav.switchTitle')}">${t('nav.switch')}</button>
               <span class="q-counter" id="endHint"></span>
+              <button class="btn btn-ghost btn-sm" id="backBtn" disabled>${t('q.back')}</button>
               <button class="btn btn-ghost btn-sm" id="endBtn" disabled>${t('q.end')}</button>
             </div>
           </div>
@@ -92,8 +97,11 @@ export function mountAssessment(app, { experience, onFinish }) {
 
     $('stageLabel').textContent = Ls2(step.stage.id, step.stage.label);
     $('qCounter').textContent = t('q.counter', { n: step.index, max: MAX_QUESTIONS });
+    const langBtn = $('qLangBtn');
+    if (langBtn) { langBtn.textContent = t('nav.switch'); langBtn.title = t('nav.switchTitle'); }
     $('fill').style.width = `${Math.round(step.progress * 100)}%`;
     $('endBtn').disabled = !session.canEndEarly();
+    $('backBtn').disabled = !history.length;
     $('endHint').textContent = session.canEndEarly()
       ? ''
       : t('q.unlock', { n: Math.max(0, step.index - 1), of: EARLY_END_MIN });
@@ -101,7 +109,8 @@ export function mountAssessment(app, { experience, onFinish }) {
 
     const visualHtml = q.visual ? renderVisual(q.visual) : '';
     const titleFn = (o) => QOpt(q, o.id, 'title');
-    shown = displayOptions(q, titleFn);
+    if (!restoreShown) shown = displayOptions(q, titleFn);
+    frame = { snapshot: session.snapshot(), step: current, shown };
 
     const optionsHtml = shown.map((o, i) => {
       const mini = o.v ? `<div class="option-mini">${renderOptionVisual(o.v)}</div>` : '';
@@ -222,9 +231,34 @@ export function mountAssessment(app, { experience, onFinish }) {
     locked = true;
     const reasonEl = $('reason');
     const reason = reasonEl ? reasonEl.value : null;
+    /* record the pre-submit world so its effect can be undone cleanly */
+    if (frame && frame.step === current) {
+      history.push({
+        snapshot: frame.snapshot,
+        step: frame.step,
+        shown: frame.shown,
+        selected: new Set(selected),
+        reason,
+      });
+      history = history.slice(-100);  /* hard cap, just in case */
+    }
     const { done } = session.submit(q, [...selected], reason);
     if (done) return finish();
     renderQuestion();
+  }
+
+  function back() {
+    if (locked || !current || !history.length) return;
+    const entry = history.pop();
+    session.restore(entry.snapshot);
+    current = entry.step;
+    shown = entry.shown;
+    selected = new Set(entry.selected);
+    reasonDraft = entry.reason || '';
+    locked = false;
+    restoreShown = true;
+    paint();
+    restoreShown = false;
   }
 
   function finish() {
@@ -249,13 +283,24 @@ export function mountAssessment(app, { experience, onFinish }) {
     } else if ((e.key === 'Enter' || e.key === 'ArrowRight') && !$('nextBtn')?.disabled) {
       e.preventDefault();
       submit();
+    } else if (e.key === 'ArrowLeft' && !$('backBtn')?.disabled) {
+      e.preventDefault();
+      back();
     }
   }
 
   document.addEventListener('keydown', onKey);
   $('endBtn').addEventListener('click', () => { if (session.canEndEarly()) finish(); });
+  $('backBtn').addEventListener('click', back);
+  $('qLangBtn').addEventListener('click', () => toggleLang());
 
-  offLang = onLang(paint);
+  /* Switching language repaints in place — keep the question, selections,
+     draft reasoning and the exact option order the user is looking at. */
+  offLang = onLang(() => {
+    restoreShown = true;
+    paint();
+    restoreShown = false;
+  });
 
   renderQuestion();
 

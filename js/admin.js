@@ -3,12 +3,15 @@
    Browse, filter, edit, add, deactivate, import/export.
    Edits persist to localStorage and are read by the live
    assessment via bank.loadBank().
+   Language-aware chrome (EN ⇄ AR) via the shared i18n layer.
    ============================================================ */
 import {
   loadBank, getQuestions, setQuestions, resetBank, validate, BANK_STORE_KEY,
 } from './data/bank.js';
 import { SKILLS, STAGES } from './data/skills.js';
+import { isAuthed, login, logout } from './data/auth.js';
 import { renderVisual, renderOptionVisual, OPTION_VISUALS, VISUALS } from './ui/visuals.js';
+import { initLang, toggleLang, onLang, t, L, Ls2 } from './i18n/index.js';
 
 const root = document.getElementById('admin');
 const toastEl = document.getElementById('toast');
@@ -33,10 +36,48 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+function skillName(id, field = 'name') { return L(SKILLS.find(s => s.id === id), field, 'skills'); }
 
 function reload() {
   questions = loadBank();
   errors = validate();
+}
+
+/* ---------------- auth gate ---------------- */
+function renderLogin() {
+  root.innerHTML = `
+    <div class="login-wrap">
+      <form class="login-card" id="loginForm" autocomplete="off">
+        <div class="brand"><span class="brand-mark"></span>
+          <span>VISOR<small>${t('adm.sub')}</small></span></div>
+        <h1 class="login-h">${t('adm.login.h')}</h1>
+        <p class="small muted">${t('adm.login.p')}</p>
+        <label class="login-field">${t('adm.login.user')}
+          <input id="lgUser" autocomplete="username" placeholder="${t('adm.login.userPh')}" />
+        </label>
+        <label class="login-field">${t('adm.login.pass')}
+          <input id="lgPass" type="password" autocomplete="current-password" placeholder="${t('adm.login.passPh')}" />
+        </label>
+        <div class="login-err" id="lgErr"></div>
+        <div class="row gap-10" style="justify-content:space-between;align-items:center">
+          <button class="btn btn-accent" type="submit">${t('adm.login.submit')}</button>
+          <a class="btn btn-ghost btn-sm" href="index.html">${t('adm.back')}</a>
+        </div>
+      </form>
+    </div>`;
+  const form = document.getElementById('loginForm');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const u = document.getElementById('lgUser').value.trim();
+    const p = document.getElementById('lgPass').value;
+    if (login(u, p)) { enter(); return; }
+    const err = document.getElementById('lgErr');
+    err.textContent = t('adm.login.err');
+    document.getElementById('lgPass').value = '';
+    document.getElementById('lgPass').focus();
+  });
+  const user = document.getElementById('lgUser');
+  if (user) user.focus();
 }
 
 /* ---------------- shell ---------------- */
@@ -45,20 +86,26 @@ function renderShell() {
     <header class="topbar">
       <div class="wrap topbar-inner">
         <div class="brand"><span class="brand-mark"></span>
-          <span>VISOR<small>Question Bank Admin</small></span></div>
+          <span>VISOR<small>${t('adm.sub')}</small></span></div>
         <div class="topbar-actions">
-          <span class="save-state" id="saveState">All changes saved</span>
-          <a class="btn btn-ghost btn-sm" href="index.html">← Back to app</a>
+          <span class="save-state" id="saveState">${dirty ? t('adm.unsaved') : t('adm.saved')}</span>
+          <button class="btn btn-lang btn-sm" id="langBtn" title="${t('nav.switchTitle')}">${t('nav.switch')}</button>
+          <button class="btn btn-ghost btn-sm" id="logoutBtn">${t('adm.logout')}</button>
+          <a class="btn btn-ghost btn-sm" href="index.html">${t('adm.back')}</a>
         </div>
       </div>
     </header>
     <div class="wrap admin-body" id="adminBody"></div>`;
+  const lb = document.getElementById('langBtn');
+  if (lb) lb.onclick = () => toggleLang();
+  const out = document.getElementById('logoutBtn');
+  if (out) out.onclick = () => { logout(); enter(); };
 }
 
 function setDirty(v) {
   dirty = v;
   const el = document.getElementById('saveState');
-  if (el) el.textContent = v ? 'Unsaved changes' : 'All changes saved';
+  if (el) el.textContent = v ? t('adm.unsaved') : t('adm.saved');
 }
 
 /* ---------------- stats + filters ---------------- */
@@ -73,31 +120,31 @@ function statsHtml() {
 
   return `
     <div class="admin-stats">
-      <div><b>${questions.length}</b><span>Total items</span></div>
-      <div><b>${active}</b><span>Active</span></div>
-      <div><b>${questions.length - active}</b><span>Deactivated</span></div>
-      <div><b>${withVisual}</b><span>Visual cases</span></div>
-      <div><b>${withReasoning}</b><span>Reasoning-scored</span></div>
-      <div class="${errors.length ? 'bad' : ''}"><b>${errors.length}</b><span>Schema issues</span></div>
+      <div><b>${questions.length}</b><span>${t('adm.stat.total')}</span></div>
+      <div><b>${active}</b><span>${t('adm.stat.active')}</span></div>
+      <div><b>${questions.length - active}</b><span>${t('adm.stat.deact')}</span></div>
+      <div><b>${withVisual}</b><span>${t('adm.stat.visual')}</span></div>
+      <div><b>${withReasoning}</b><span>${t('adm.stat.reason')}</span></div>
+      <div class="${errors.length ? 'bad' : ''}"><b>${errors.length}</b><span>${t('adm.stat.issues')}</span></div>
     </div>
-    ${errors.length ? `<div class="admin-errors"><b>Validation issues</b><ul>${errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
+    ${errors.length ? `<div class="admin-errors"><b>${t('adm.valid.head')}</b><ul>${errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
     <div class="admin-coverage">
-      <div><span>By skill</span><div class="cov">${bySkill.map(({ s, n }) =>
-        `<i style="flex:${Math.max(n, .4)}" title="${s.name}: ${n}"><u>${n}</u></i>`).join('')}</div></div>
-      <div><span>By difficulty</span><div class="cov">${byDifficulty.map(({ d, n }) =>
-        `<i style="flex:${Math.max(n, .4)}" title="Difficulty ${d}: ${n}"><u>${n}</u></i>`).join('')}</div></div>
+      <div><span>${t('adm.cov.skill')}</span><div class="cov">${bySkill.map(({ s, n }) =>
+        `<i style="flex:${Math.max(n, .4)}" title="${esc(L(s, 'name', 'skills'))}: ${n}"><u>${n}</u></i>`).join('')}</div></div>
+      <div><span>${t('adm.cov.diff')}</span><div class="cov">${byDifficulty.map(({ d, n }) =>
+        `<i style="flex:${Math.max(n, .4)}" title="${t('adm.diff', { d })}: ${n}"><u>${n}</u></i>`).join('')}</div></div>
     </div>`;
 }
 
 function filtered() {
-  const t = filters.text.trim().toLowerCase();
+  const txt = filters.text.trim().toLowerCase();
   return questions.filter(q => {
     if (filters.skill && q.skill !== filters.skill) return false;
     if (filters.difficulty && String(q.difficulty) !== filters.difficulty) return false;
-    if (filters.type && q.type !== filters.type) return false;
+    if (filters.type && (q.type || 'choice') !== filters.type) return false;
     if (filters.status === 'active' && q.active === false) return false;
     if (filters.status === 'inactive' && q.active !== false) return false;
-    if (t && !(`${q.id} ${q.prompt} ${q.title || ''}`.toLowerCase().includes(t))) return false;
+    if (txt && !(`${q.id} ${q.prompt} ${q.title || ''}`.toLowerCase().includes(txt))) return false;
     return true;
   });
 }
@@ -105,43 +152,43 @@ function filtered() {
 function filtersHtml() {
   return `
     <div class="admin-filters">
-      <input id="fText" placeholder="Search id or prompt…" value="${esc(filters.text)}" />
-      <select id="fSkill"><option value="">All skills</option>
-        ${SKILLS.map(s => `<option value="${s.id}" ${filters.skill === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+      <input id="fText" placeholder="${t('adm.f.search')}" value="${esc(filters.text)}" />
+      <select id="fSkill"><option value="">${t('adm.all.skills')}</option>
+        ${SKILLS.map(s => `<option value="${s.id}" ${filters.skill === s.id ? 'selected' : ''}>${esc(L(s, 'name', 'skills'))}</option>`).join('')}
       </select>
-      <select id="fDiff"><option value="">All difficulties</option>
-        ${[1, 2, 3, 4, 5, 6, 7].map(d => `<option value="${d}" ${filters.difficulty === String(d) ? 'selected' : ''}>Difficulty ${d}</option>`).join('')}
+      <select id="fDiff"><option value="">${t('adm.all.diff')}</option>
+        ${[1, 2, 3, 4, 5, 6, 7].map(d => `<option value="${d}" ${filters.difficulty === String(d) ? 'selected' : ''}>${t('adm.diff', { d })}</option>`).join('')}
       </select>
-      <select id="fType"><option value="">All types</option>
-        <option value="single" ${filters.type === 'single' ? 'selected' : ''}>Single choice</option>
-        <option value="multi" ${filters.type === 'multi' ? 'selected' : ''}>Multi-select</option>
+      <select id="fType"><option value="">${t('adm.all.types')}</option>
+        <option value="choice" ${filters.type === 'choice' ? 'selected' : ''}>${t('adm.type.single')}</option>
+        <option value="multi" ${filters.type === 'multi' ? 'selected' : ''}>${t('adm.type.multi')}</option>
       </select>
-      <select id="fStatus"><option value="">Any status</option>
-        <option value="active" ${filters.status === 'active' ? 'selected' : ''}>Active</option>
-        <option value="inactive" ${filters.status === 'inactive' ? 'selected' : ''}>Deactivated</option>
+      <select id="fStatus"><option value="">${t('adm.any.status')}</option>
+        <option value="active" ${filters.status === 'active' ? 'selected' : ''}>${t('adm.status.active')}</option>
+        <option value="inactive" ${filters.status === 'inactive' ? 'selected' : ''}>${t('adm.status.inactive')}</option>
       </select>
       <span class="spacer"></span>
-      <button class="btn btn-sm" id="addBtn">+ New question</button>
-      <button class="btn btn-sm" id="exportBtn">Export JSON</button>
-      <button class="btn btn-sm" id="importBtn">Import JSON</button>
-      <button class="btn btn-sm btn-ghost" id="resetBtn">Reset to defaults</button>
+      <button class="btn btn-sm" id="addBtn">${t('adm.add')}</button>
+      <button class="btn btn-sm" id="exportBtn">${t('adm.export')}</button>
+      <button class="btn btn-sm" id="importBtn">${t('adm.import')}</button>
+      <button class="btn btn-sm btn-ghost" id="resetBtn">${t('adm.reset')}</button>
       <input type="file" id="importFile" accept="application/json" hidden />
     </div>`;
 }
 
 function listHtml() {
   const list = filtered();
-  if (!list.length) return `<div class="admin-empty">No questions match these filters.</div>`;
+  if (!list.length) return `<div class="admin-empty">${t('adm.empty')}</div>`;
   return `<div class="admin-list">${list.map(q => {
     const on = q.active !== false;
     return `
     <button class="admin-row ${selectedId === q.id ? 'sel' : ''}" data-id="${esc(q.id)}">
       <span class="rid">${esc(q.id)}</span>
-      <span class="rskill" data-skill="${q.skill}">${SKILLS.find(s => s.id === q.skill)?.short || q.skill}</span>
+      <span class="rskill" data-skill="${q.skill}">${esc(skillName(q.skill, 'short'))}</span>
       <span class="rdiff">d${q.difficulty}</span>
-      <span class="rtype ${q.type}">${q.type === 'multi' ? 'MULTI' : 'SINGLE'}</span>
-      ${q.visual ? '<span class="flag">VISUAL</span>' : ''}
-      ${q.reasoning ? '<span class="flag">TEXT</span>' : ''}
+      <span class="rtype ${q.type === 'multi' ? 'multi' : 'single'}">${q.type === 'multi' ? t('adm.tag.multi') : t('adm.tag.single')}</span>
+      ${q.visual ? `<span class="flag">${t('adm.flag.visual')}</span>` : ''}
+      ${q.reasoning ? `<span class="flag">${t('adm.flag.text')}</span>` : ''}
       <span class="rstatus ${on ? 'on' : 'off'}">${on ? '●' : '○'}</span>
       <span class="rprompt">${esc(q.prompt)}</span>
     </button>`;
@@ -152,8 +199,8 @@ function listHtml() {
 function editorHtml() {
   if (!draft) {
     return `<aside class="admin-editor"><div class="editor-blank">
-      <b>Select a question</b>
-      <p>Pick an item from the list to edit its prompt, options, scoring weights, reasoning rubric and visual case.</p>
+      <b>${t('adm.editor.blankH')}</b>
+      <p>${t('adm.editor.blankP')}</p>
     </div></aside>`;
   }
   const q = draft;
@@ -163,93 +210,93 @@ function editorHtml() {
   return `
   <aside class="admin-editor">
     <div class="editor-head">
-      <div><b>${esc(q.id)}</b><span>${stage ? stage.label : ''}</span></div>
+      <div><b>${esc(q.id)}</b><span>${stage ? esc(Ls2(stage.id, stage.label)) : ''}</span></div>
       <div class="row gap-8">
-        <button class="btn btn-sm" id="dupBtn">Duplicate</button>
-        <button class="btn btn-sm btn-danger" id="delBtn">Delete</button>
+        <button class="btn btn-sm" id="dupBtn">${t('adm.dup')}</button>
+        <button class="btn btn-sm btn-danger" id="delBtn">${t('adm.del')}</button>
       </div>
     </div>
 
     <div class="form-grid">
-      <label>Question ID<input data-f="id" value="${esc(q.id)}" /></label>
-      <label>Skill<select data-f="skill">
-        ${SKILLS.map(s => `<option value="${s.id}" ${q.skill === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+      <label>${t('adm.f.id')}<input data-f="id" value="${esc(q.id)}" /></label>
+      <label>${t('adm.f.skill')}<select data-f="skill">
+        ${SKILLS.map(s => `<option value="${s.id}" ${q.skill === s.id ? 'selected' : ''}>${esc(L(s, 'name', 'skills'))}</option>`).join('')}
       </select></label>
-      <label>Difficulty (1–7)<input data-f="difficulty" type="number" min="1" max="7" value="${q.difficulty}" /></label>
-      <label>Answer type<select data-f="type">
-        <option value="single" ${q.type !== 'multi' ? 'selected' : ''}>Single choice</option>
-        <option value="multi" ${q.type === 'multi' ? 'selected' : ''}>Multi-select</option>
+      <label>${t('adm.f.diff')}<input data-f="difficulty" type="number" min="1" max="7" value="${q.difficulty}" /></label>
+      <label>${t('adm.f.type')}<select data-f="type">
+        <option value="choice" ${q.type !== 'multi' ? 'selected' : ''}>${t('adm.type.single')}</option>
+        <option value="multi" ${q.type === 'multi' ? 'selected' : ''}>${t('adm.type.multi')}</option>
       </select></label>
-      <label>Visual case<select data-f="visual">
-        <option value="">None</option>
+      <label>${t('adm.f.visual')}<select data-f="visual">
+        <option value="">${t('adm.none')}</option>
         ${VISUAL_KEYS.map(k => `<option value="${k}" ${q.visual === k ? 'selected' : ''}>${k}</option>`).join('')}
       </select></label>
-      <label>Status<select data-f="active">
-        <option value="true" ${q.active !== false ? 'selected' : ''}>Active</option>
-        <option value="false" ${q.active === false ? 'selected' : ''}>Deactivated (excluded)</option>
+      <label>${t('adm.f.status')}<select data-f="active">
+        <option value="true" ${q.active !== false ? 'selected' : ''}>${t('adm.f.active')}</option>
+        <option value="false" ${q.active === false ? 'selected' : ''}>${t('adm.f.inactive')}</option>
       </select></label>
-      <label class="span2">Case / kicker title<input data-f="title" value="${esc(q.title || '')}" placeholder="Shown above the prompt" /></label>
-      <label class="span2">Prompt<textarea data-f="prompt" rows="3">${esc(q.prompt)}</textarea></label>
-      <label>Brief label<input data-f="brief.label" value="${esc(q.brief?.label || '')}" placeholder="Situation / Task" /></label>
-      <label class="span2">Brief text<textarea data-f="brief.text" rows="3">${esc(q.brief?.text || '')}</textarea></label>
+      <label class="span2">${t('adm.f.title')}<input data-f="title" value="${esc(q.title || '')}" placeholder="${t('adm.f.titlePh')}" /></label>
+      <label class="span2">${t('adm.f.prompt')}<textarea data-f="prompt" rows="3">${esc(q.prompt)}</textarea></label>
+      <label>${t('adm.f.briefLabel')}<input data-f="brief.label" value="${esc(q.brief?.label || '')}" placeholder="${t('adm.f.briefLabelPh')}" /></label>
+      <label class="span2">${t('adm.f.briefText')}<textarea data-f="brief.text" rows="3">${esc(q.brief?.text || '')}</textarea></label>
     </div>
 
     <div class="editor-section">
-      <div class="editor-section-head"><b>Options</b><span>weight 0–1 · tick the correct answer(s)</span></div>
+      <div class="editor-section-head"><b>${t('adm.opt.head')}</b><span>${t('adm.opt.note')}</span></div>
       <div id="optList">
         ${q.options.map((o, i) => `
           <div class="opt-edit" data-i="${i}">
             <div class="opt-edit-top">
               <span class="option-key">${String.fromCharCode(65 + i)}</span>
-              <input data-of="title" value="${esc(o.title)}" placeholder="Option title" />
-              <label class="mini">weight<input data-of="q" type="number" min="0" max="1" step="0.05" value="${o.q}" /></label>
-              <label class="mini check"><input data-of="correct" type="${q.type === 'multi' ? 'checkbox' : 'radio'}" name="correctOpt" ${q.correct.includes(o.id) ? 'checked' : ''} /> correct</label>
-              <button class="icon-btn" data-act="up" title="Up">↑</button>
-              <button class="icon-btn" data-act="down" title="Down">↓</button>
-              <button class="icon-btn" data-act="del" title="Remove">×</button>
+              <input data-of="title" value="${esc(o.title)}" placeholder="${t('adm.opt.titlePh')}" />
+              <label class="mini">${t('adm.opt.weight')}<input data-of="q" type="number" min="0" max="1" step="0.05" value="${o.q}" /></label>
+              <label class="mini check"><input data-of="correct" type="${q.type === 'multi' ? 'checkbox' : 'radio'}" name="correctOpt" ${q.correct.includes(o.id) ? 'checked' : ''} /> ${t('adm.opt.correct')}</label>
+              <button class="icon-btn" data-act="up" title="${t('adm.opt.up')}">↑</button>
+              <button class="icon-btn" data-act="down" title="${t('adm.opt.down')}">↓</button>
+              <button class="icon-btn" data-act="del" title="${t('adm.opt.del')}">×</button>
             </div>
-            <input data-of="desc" value="${esc(o.desc || '')}" placeholder="Description (optional)" />
+            <input data-of="desc" value="${esc(o.desc || '')}" placeholder="${t('adm.opt.descPh')}" />
             <div class="opt-edit-bottom">
-              <label class="mini">mini-visual<select data-of="v">
-                <option value="">None</option>
+              <label class="mini">${t('adm.opt.mini')}<select data-of="v">
+                <option value="">${t('adm.none')}</option>
                 ${OPT_VISUALS.map(k => `<option value="${k}" ${o.v === k ? 'selected' : ''}>${k}</option>`).join('')}
               </select></label>
               ${o.v ? `<span class="mini-preview">${renderOptionVisual(o.v)}</span>` : ''}
-              <span class="oid">id: ${esc(o.id)}</span>
+              <span class="oid">${t('adm.opt.id')} ${esc(o.id)}</span>
             </div>
           </div>`).join('')}
       </div>
-      <button class="btn btn-sm mt-8" id="addOpt">+ Add option</button>
+      <button class="btn btn-sm mt-8" id="addOpt">${t('adm.opt.add')}</button>
     </div>
 
     <div class="editor-section">
-      <div class="editor-section-head"><b>Reasoning rubric (optional)</b><span>free-text justification scored by synonym groups</span></div>
-      <label class="checkline"><input type="checkbox" id="reasonOn" ${q.reasoning ? 'checked' : ''} /> Score written explanations</label>
+      <div class="editor-section-head"><b>${t('adm.reason.head')}</b><span>${t('adm.reason.note')}</span></div>
+      <label class="checkline"><input type="checkbox" id="reasonOn" ${q.reasoning ? 'checked' : ''} /> ${t('adm.reason.on')}</label>
       ${q.reasoning ? `
-        <label class="mt-8">Max points<input type="number" data-r="max" min="1" max="30" value="${q.reasoning.max || 10}" /></label>
-        <label class="mt-8">Required concept groups
-          <textarea data-r="required" rows="4" placeholder="one group per line; synonyms comma-separated&#10;e.g. hierarchy, focal point, reading order">${esc((q.reasoning.required || []).map(g => g.join(', ')).join('\n'))}</textarea>
+        <label class="mt-8">${t('adm.reason.max')}<input type="number" data-r="max" min="1" max="30" value="${q.reasoning.max || 10}" /></label>
+        <label class="mt-8">${t('adm.reason.req')}
+          <textarea data-r="required" rows="4" placeholder="${t('adm.reason.reqPh')}">${esc((q.reasoning.required || []).map(g => g.join(', ')).join('\n'))}</textarea>
         </label>
-        <div class="hint">The answer must mention at least one synonym from each group. Each line = one group.</div>
-        <label class="mt-8">Anti-patterns (penalised)
-          <textarea data-r="anti" rows="3" placeholder="one group per line; synonyms comma-separated">${esc((q.reasoning.anti || []).map(g => g.join(', ')).join('\n'))}</textarea>
-        </label>` : '<div class="hint mt-8">Off — only the selected option contributes to quality.</div>'}
+        <div class="hint">${t('adm.reason.reqHint')}</div>
+        <label class="mt-8">${t('adm.reason.anti')}
+          <textarea data-r="anti" rows="3" placeholder="${t('adm.reason.antiPh')}">${esc((q.reasoning.anti || []).map(g => g.join(', ')).join('\n'))}</textarea>
+        </label>` : `<div class="hint mt-8">${t('adm.reason.off')}</div>`}
     </div>
 
     <div class="editor-section">
-      <div class="editor-section-head"><b>Purpose (internal)</b><span>never shown to the candidate</span></div>
+      <div class="editor-section-head"><b>${t('adm.purpose.head')}</b><span>${t('adm.purpose.note')}</span></div>
       <textarea data-f="purpose" rows="2">${esc(q.purpose || '')}</textarea>
     </div>
 
     ${q.visual ? `
     <div class="editor-section">
-      <div class="editor-section-head"><b>Visual preview</b></div>
+      <div class="editor-section-head"><b>${t('adm.preview.head')}</b></div>
       <div class="caseframe" style="margin-top:0">${renderVisual(q.visual)}</div>
     </div>` : ''}
 
     <div class="editor-actions">
-      <button class="btn btn-accent" id="saveBtn">Save question</button>
-      <button class="btn btn-ghost" id="cancelBtn">Discard changes</button>
+      <button class="btn btn-accent" id="saveBtn">${t('adm.save')}</button>
+      <button class="btn btn-ghost" id="cancelBtn">${t('adm.discard')}</button>
       <span class="hint" id="saveMsg"></span>
     </div>
   </aside>`;
@@ -282,12 +329,12 @@ function bind() {
   on('importBtn', 'click', () => $('importFile').click());
   on('importFile', 'change', importJson);
   on('resetBtn', 'click', () => {
-    if (!confirm('Discard all admin edits and restore the shipped question bank?')) return;
+    if (!confirm(t('adm.confirmReset'))) return;
     questions = resetBank();
     setDirty(false);
     draft = null; selectedId = null;
     render();
-    toast('Bank restored to defaults');
+    toast(t('adm.resetDone'));
   });
 
   document.querySelectorAll('.admin-row').forEach(row => {
@@ -355,7 +402,7 @@ function renderListOnly() {
 
 /* ---------------- editing ---------------- */
 function select(id) {
-  if (dirty && !confirm('Discard unsaved changes to the current question?')) return;
+  if (dirty && !confirm(t('adm.confirmDiscard'))) return;
   const q = questions.find(x => x.id === id);
   if (!q) return;
   selectedId = id;
@@ -402,7 +449,7 @@ function setOption(i, field, value, el) {
 function optionAction(i, act) {
   const opts = draft.options;
   if (act === 'del') {
-    if (opts.length <= 2) return toast('A question needs at least 2 options');
+    if (opts.length <= 2) return toast(t('adm.needTwo'));
     const [removed] = opts.splice(i, 1);
     draft.correct = draft.correct.filter(c => c !== removed.id);
     if (!draft.correct.length) draft.correct = [opts[0].id];
@@ -431,16 +478,16 @@ function setReasoning(field, value) {
 function validateDraft() {
   const q = draft;
   const problems = [];
-  if (!/^[a-z0-9-]+$/i.test(q.id || '')) problems.push('ID must be alphanumeric with hyphens.');
+  if (!/^[a-z0-9-]+$/i.test(q.id || '')) problems.push(t('adm.v.id'));
   if (questions.some(x => x.id === q.id && x !== questions.find(y => y.id === selectedId)))
-    problems.push('ID already exists.');
-  if (!q.prompt?.trim()) problems.push('Prompt is required.');
-  if (q.options.length < 2) problems.push('Needs at least 2 options.');
-  if (!q.correct.length) problems.push('Mark at least one correct option.');
-  if (q.type !== 'multi' && q.correct.length !== 1) problems.push('Single-choice needs exactly 1 correct option.');
+    problems.push(t('adm.v.dupId'));
+  if (!q.prompt?.trim()) problems.push(t('adm.v.prompt'));
+  if (q.options.length < 2) problems.push(t('adm.v.two'));
+  if (!q.correct.length) problems.push(t('adm.v.correct'));
+  if (q.type !== 'multi' && q.correct.length !== 1) problems.push(t('adm.v.single'));
   for (const o of q.options) {
-    if (!(o.q >= 0 && o.q <= 1)) problems.push(`Option "${o.title}" weight must be 0–1.`);
-    if (!o.title?.trim()) problems.push('Every option needs a title.');
+    if (!(o.q >= 0 && o.q <= 1)) problems.push(t('adm.v.weight', { title: o.title }));
+    if (!o.title?.trim()) problems.push(t('adm.v.optTitle'));
   }
   return problems;
 }
@@ -460,11 +507,11 @@ function save() {
   setDirty(false);
   if (newId) selectedId = draft.id;
   render();
-  toast('Question saved — live assessment updated');
+  toast(t('adm.savedToast'));
 }
 
 function addQuestion() {
-  if (dirty && !confirm('Discard unsaved changes?')) return;
+  if (dirty && !confirm(t('adm.confirmDiscard2'))) return;
   let n = questions.length + 1;
   let id = `new-${n}`;
   while (questions.some(q => q.id === id)) { n++; id = `new-${n}`; }
@@ -472,7 +519,7 @@ function addQuestion() {
     id,
     skill: 'fundamentals',
     difficulty: 3,
-    type: 'single',
+    type: 'choice',
     prompt: 'New question prompt',
     options: [
       { id: 'a', title: 'Option A', desc: '', q: 1 },
@@ -489,7 +536,7 @@ function addQuestion() {
   selectedId = id;
   draft = clone(q);
   render();
-  toast('Draft created (inactive until activated)');
+  toast(t('adm.draftCreated'));
 }
 
 function duplicate() {
@@ -505,17 +552,17 @@ function duplicate() {
   selectedId = id;
   draft = clone(copy);
   render();
-  toast('Duplicated (inactive)');
+  toast(t('adm.dupDone'));
 }
 
 function remove() {
-  if (!draft || !confirm(`Delete "${draft.id}" permanently?`)) return;
+  if (!draft || !confirm(t('adm.confirmDelete', { id: draft.id }))) return;
   questions = questions.filter(q => q.id !== selectedId);
   setQuestions(clone(questions));
   draft = null; selectedId = null;
   setDirty(false);
   render();
-  toast('Question deleted');
+  toast(t('adm.deleted'));
 }
 
 /* ---------------- import / export ---------------- */
@@ -526,7 +573,7 @@ function exportJson() {
   a.download = 'visor-question-bank.json';
   a.click();
   URL.revokeObjectURL(a.href);
-  toast('Exported');
+  toast(t('adm.exported'));
 }
 
 function importJson(e) {
@@ -541,9 +588,9 @@ function importJson(e) {
       setQuestions(clone(questions));
       draft = null; selectedId = null;
       render();
-      toast(`Imported ${data.length} questions`);
+      toast(t('adm.imported', { n: data.length }));
     } catch (err) {
-      toast('Import failed: ' + err.message);
+      toast(t('adm.importFail', { msg: err.message }));
     }
   };
   reader.readAsText(file);
@@ -551,6 +598,14 @@ function importJson(e) {
 }
 
 /* ---------------- boot ---------------- */
+function enter() {
+  if (!isAuthed()) { renderLogin(); return; }
+  renderShell();
+  render();
+}
+
+initLang();
+document.title = t('adm.title');
+onLang(() => { document.title = t('adm.title'); enter(); });
 reload();
-renderShell();
-render();
+enter();
