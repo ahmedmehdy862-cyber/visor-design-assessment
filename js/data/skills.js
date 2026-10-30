@@ -45,13 +45,13 @@ export const TRACKS = [
   { id: 'social', name: 'Social Media Designer', blurb: 'Platform-native content systems and campaign adaptation.',
     weights: { fundamentals: .12, typography: .14, color: .12, image: .13, concept: .10, branding: .09, campaign: .21, artDirection: .04, practice: .04, leadership: .01 } },
   { id: 'brand', name: 'Brand Designer', blurb: 'Identity systems, guidelines and brand application.',
-    weights: { fundamentals: .14, typography: .14, color: .12, image: .06, concept: .14, branding: .24, campaign: .06, artDirection: .04, practice: .06, leadership: .04 } },
+    weights: { fundamentals: .135, typography: .135, color: .115, image: .058, concept: .135, branding: .23, campaign: .058, artDirection: .038, practice: .058, leadership: .038 } },
   { id: 'visual', name: 'Visual Designer', blurb: 'Cross-format visual execution with strong craft fundamentals.',
     weights: { fundamentals: .17, typography: .16, color: .15, image: .15, concept: .13, branding: .08, campaign: .07, artDirection: .05, practice: .03, leadership: .01 } },
   { id: 'creative', name: 'Creative Designer', blurb: 'Concept-led work across campaigns and visual storytelling.',
     weights: { fundamentals: .10, typography: .10, color: .10, image: .13, concept: .20, branding: .06, campaign: .14, artDirection: .13, practice: .03, leadership: .01 } },
   { id: 'artDirector', name: 'Art Director', blurb: 'Direction of campaigns, systems and other creatives.',
-    weights: { fundamentals: .06, typography: .05, color: .05, image: .11, concept: .18, branding: .07, campaign: .15, artDirection: .22, practice: .06, leadership: .15 } },
+    weights: { fundamentals: .055, typography: .045, color: .045, image: .1, concept: .164, branding: .064, campaign: .136, artDirection: .2, practice: .055, leadership: .136 } },
 ];
 
 /* Art Direction Readiness — computed separately from level. */
@@ -65,13 +65,14 @@ export const READINESS_PARTS = [
   { id: 'leadership',     name: 'Leadership',        weight: .10, skills: ['leadership'] },
 ];
 
-/* Stage labels shown to the user (never reveals scoring logic). */
+/* Stage labels shown to the user (never reveals scoring logic).
+   `id` keys into the Arabic overlay (AR.stages). */
 export const STAGES = [
-  { min: 1, max: 2, label: 'Stage 1 · Foundations' },
-  { min: 3, max: 3, label: 'Stage 2 · Application' },
-  { min: 4, max: 4, label: 'Stage 3 · Analysis' },
-  { min: 5, max: 6, label: 'Stage 4 · Strategy' },
-  { min: 7, max: 7, label: 'Stage 5 · Direction' },
+  { id: 'S1', min: 1, max: 2, label: 'Stage 1 · Foundations' },
+  { id: 'S2', min: 3, max: 3, label: 'Stage 2 · Application' },
+  { id: 'S3', min: 4, max: 4, label: 'Stage 3 · Analysis' },
+  { id: 'S4', min: 5, max: 6, label: 'Stage 4 · Strategy' },
+  { id: 'S5', min: 7, max: 7, label: 'Stage 5 · Direction' },
 ];
 
 export function stageFor(difficulty) {

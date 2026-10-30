@@ -15,6 +15,11 @@ import { createState, recordResponse, skillConfidence, sessionStats } from './sc
 export const MIN_QUESTIONS = 24;
 export const MAX_QUESTIONS = 36;
 export const EARLY_END_MIN = 15;
+
+/* Progress reaches 100% at the minimum length; extension items (25–36)
+   are flagged so the UI can mark the "beyond minimum" phase honestly
+   instead of implying the run is stalled at ~71%. */
+export const progressFor = (index) => Math.min(1, index / MIN_QUESTIONS);
 export const CONF_TARGET = 0.58;
 export const CONF_MEAN_TARGET = 0.68;
 
@@ -118,8 +123,8 @@ export function createSession({ experience = null, startTier = 1 } = {}) {
       index,
       anchor: !!anchor,
       stage: stageFor(question.difficulty),
-      // progress shown without revealing logic; anchors are the visible structure
-      progress: Math.min(0.97, index / (MAX_QUESTIONS - 2)),
+      progress: progressFor(index),
+      extended: index > MIN_QUESTIONS,
     };
   }
 

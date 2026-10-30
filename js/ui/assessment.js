@@ -5,8 +5,10 @@
    Language switches repaint the current step without advancing,
    preserving the user's selections and draft reasoning.
    ============================================================ */
-import { createSession, MAX_QUESTIONS, EARLY_END_MIN } from '../engine/adaptive.js';
-import { SKILLS } from '../data/skills.js';
+import { createSession, MAX_QUESTIONS, EARLY_END_MIN, MIN_QUESTIONS, progressFor } from '../engine/adaptive.js';
+import { SKILLS, stageFor } from '../data/skills.js';
+import { getQuestion } from '../data/bank.js';
+import { saveRun, clearRun } from '../data/run.js';
 import { renderVisual, renderOptionVisual } from './visuals.js';
 import { t, L, QL, QOpt, Ls2, onLang, toggleLang } from '../i18n/index.js';
 
@@ -34,7 +36,7 @@ export function displayOptions(q, titleFn) {
   return arr;
 }
 
-export function mountAssessment(app, { experience, onFinish }) {
+export function mountAssessment(app, { experience, onFinish, resume = null, name = '' }) {
   const startTier = { beginner: 1, some: 2, experienced: 3, senior: 4 }[experience] || 1;
   const session = createSession({ experience, startTier });
   let current = null;
@@ -46,6 +48,7 @@ export function mountAssessment(app, { experience, onFinish }) {
   let frame = null;          /* per-question snapshot for "go back" */
   let history = [];          /* stack of answered-question records */
   let restoreShown = false;  /* keep the exact order a restored question had */
+  let persistT = null;       /* debounced localStorage write */
 
   app.innerHTML = `
     <div class="assess">
@@ -54,7 +57,7 @@ export function mountAssessment(app, { experience, onFinish }) {
           <div class="progress-top">
             <div class="stack gap-6">
               <span class="stage-label" id="stageLabel"></span>
-              <span class="q-counter" id="qCounter"></span>
+              <span class="q-counter" id="qCounter" aria-live="polite"></span>
             </div>
             <div class="row gap-10">
               <button class="btn btn-lang btn-sm" id="qLangBtn" title="${t('nav.switchTitle')}">${t('nav.switch')}</button>
@@ -63,7 +66,7 @@ export function mountAssessment(app, { experience, onFinish }) {
               <button class="btn btn-ghost btn-sm" id="endBtn" disabled>${t('q.end')}</button>
             </div>
           </div>
-          <div class="progress-bar"><div class="progress-fill" id="fill" style="width:2%"></div></div>
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4" aria-label="${t('q.progressLabel')}"><div class="progress-fill" id="fill" style="width:2%"></div></div>
           <div class="skillpills" id="pills"></div>
         </div>
       </div>
@@ -72,6 +75,90 @@ export function mountAssessment(app, { experience, onFinish }) {
 
   const $ = (id) => document.getElementById(id);
   const host = $('qhost');
+
+  /* ---- run persistence (localStorage) ------------------------------
+     Written debounced on every selection/reason change and question
+     boundary, so a refresh or closed tab resumes exactly here. */
+  function persist() {
+    if (!current) return;
+    const reasonEl = $('reason');
+    saveRun({
+      v: 1,
+      name,
+      experience,
+      current: { qid: current.question.id, index: current.index, anchor: current.anchor },
+      shownIds: shown.map(o => o.id),
+      selectedIds: [...selected],
+      reasonDraft: reasonEl ? reasonEl.value : reasonDraft,
+      snapshot: { state: frame ? frame.snapshot.state : session.state, used: frame ? [...frame.snapshot.used] : [] },
+      history: history.map(h => ({
+        qid: h.step.question.id,
+        index: h.step.index,
+        anchor: h.step.anchor,
+        shownIds: h.shown.map(o => o.id),
+        selectedIds: [...h.selected],
+        reason: h.reason || '',
+        snapshot: { state: h.snapshot.state, used: [...h.snapshot.used] },
+      })),
+    });
+  }
+  function persistSoon() {
+    clearTimeout(persistT);
+    persistT = setTimeout(persist, 250);
+  }
+
+  /* Rebuild a live step from a persisted qid; null if the bank no
+     longer has it (question deactivated since the run was saved). */
+  function stepFrom(saved, fallbackProgress) {
+    const q = getQuestion(saved.qid);
+    if (!q || q.active === false) return null;
+    return {
+      question: q,
+      index: saved.index,
+      anchor: !!saved.anchor,
+      stage: stageFor(q.difficulty),
+      progress: fallbackProgress ?? progressFor(saved.index),
+      extended: saved.index > MIN_QUESTIONS,
+    };
+  }
+
+  function restoreRun(run) {
+    try {
+      const step = stepFrom(run.current);
+      if (!step) return false;
+      const optById = new Map(step.question.options.map(o => [o.id, o]));
+      const restoredShown = (run.shownIds || []).map(id => optById.get(id)).filter(Boolean);
+      if (restoredShown.length !== step.question.options.length) return false;
+      const restoredSelected = new Set((run.selectedIds || []).filter(id => optById.has(id)));
+      /* rebuild history first — a broken entry invalidates back-nav */
+      const restoredHistory = [];
+      for (const h of run.history || []) {
+        const hstep = stepFrom(h);
+        if (!hstep) return false;
+        const hopts = new Map(hstep.question.options.map(o => [o.id, o]));
+        const hshown = (h.shownIds || []).map(id => hopts.get(id)).filter(Boolean);
+        if (hshown.length !== hstep.question.options.length) return false;
+        restoredHistory.push({
+          snapshot: { state: h.snapshot.state, used: new Set(h.snapshot.used || []) },
+          step: hstep,
+          shown: hshown,
+          selected: new Set((h.selectedIds || []).filter(id => hopts.has(id))),
+          reason: h.reason || '',
+        });
+      }
+      session.restore({ state: run.snapshot.state, used: new Set(run.snapshot.used || []) });
+      current = step;
+      shown = restoredShown;
+      selected = restoredSelected;
+      reasonDraft = run.reasonDraft || '';
+      history = restoredHistory;
+      locked = false;
+      restoreShown = true;
+      paint();
+      restoreShown = false;
+      return true;
+    } catch { return false; }
+  }
 
   function skillName(id) { return L(SKILLS.find(s => s.id === id), 'short', 'skills'); }
 
@@ -99,12 +186,19 @@ export function mountAssessment(app, { experience, onFinish }) {
     $('qCounter').textContent = t('q.counter', { n: step.index, max: MAX_QUESTIONS });
     const langBtn = $('qLangBtn');
     if (langBtn) { langBtn.textContent = t('nav.switch'); langBtn.title = t('nav.switchTitle'); }
-    $('fill').style.width = `${Math.round(step.progress * 100)}%`;
+    const fill = $('fill');
+    fill.style.width = `${Math.round(step.progress * 100)}%`;
+    fill.classList.toggle('accent', !!step.extended);
+    const bar = fill.parentElement;
+    if (bar) {
+      bar.setAttribute('aria-valuenow', String(Math.round(step.progress * 100)));
+      bar.setAttribute('aria-label', t('q.progressLabel'));
+    }
     $('endBtn').disabled = !session.canEndEarly();
     $('backBtn').disabled = !history.length;
     $('endHint').textContent = session.canEndEarly()
       ? ''
-      : t('q.unlock', { n: Math.max(0, step.index - 1), of: EARLY_END_MIN });
+      : t('q.unlock', { left: Math.max(0, EARLY_END_MIN - (step.index - 1)), of: EARLY_END_MIN });
     renderPills(q.skill);
 
     const visualHtml = q.visual ? renderVisual(q.visual) : '';
@@ -172,7 +266,10 @@ export function mountAssessment(app, { experience, onFinish }) {
       btn.addEventListener('click', () => toggleOption(btn.dataset.opt));
     });
     $('nextBtn').addEventListener('click', submit);
+    const reasonEl = $('reason');
+    if (reasonEl) reasonEl.addEventListener('input', persistSoon);
     syncSelection();
+    persistSoon();
   }
 
   function renderQuestion() {
@@ -222,6 +319,7 @@ export function mountAssessment(app, { experience, onFinish }) {
     });
     const btn = $('nextBtn');
     if (btn) btn.disabled = selected.size !== numRequired(q);
+    persistSoon();
   }
 
   function submit() {
@@ -259,12 +357,21 @@ export function mountAssessment(app, { experience, onFinish }) {
     restoreShown = true;
     paint();
     restoreShown = false;
+    persistSoon();
   }
 
   function finish() {
     document.removeEventListener('keydown', onKey);
+    window.removeEventListener('beforeunload', onUnload);
     if (offLang) offLang();
+    clearTimeout(persistT);
+    clearRun();
     onFinish(session);
+  }
+
+  function onUnload() {
+    clearTimeout(persistT);
+    persist();
   }
 
   function onKey(e) {
@@ -277,9 +384,11 @@ export function mountAssessment(app, { experience, onFinish }) {
     const key = e.key.toLowerCase();
     let idx = KEYS.indexOf(key);
     if (idx < 0 && /^[1-9]$/.test(key)) idx = Number(key) - 1;
-    if (idx >= 0 && idx < current.question.options.length) {
+    /* index into the shuffled on-screen order — the badges are assigned
+       from `shown`, so key letters must map to what the user sees */
+    if (idx >= 0 && idx < shown.length) {
       e.preventDefault();
-      toggleOption(current.question.options[idx].id);
+      toggleOption(shown[idx].id);
     } else if ((e.key === 'Enter' || e.key === 'ArrowRight') && !$('nextBtn')?.disabled) {
       e.preventDefault();
       submit();
@@ -290,6 +399,7 @@ export function mountAssessment(app, { experience, onFinish }) {
   }
 
   document.addEventListener('keydown', onKey);
+  window.addEventListener('beforeunload', onUnload);
   $('endBtn').addEventListener('click', () => { if (session.canEndEarly()) finish(); });
   $('backBtn').addEventListener('click', back);
   $('qLangBtn').addEventListener('click', () => toggleLang());
@@ -302,7 +412,7 @@ export function mountAssessment(app, { experience, onFinish }) {
     restoreShown = false;
   });
 
-  renderQuestion();
+  if (!resume || !restoreRun(resume)) renderQuestion();
 
   return { session };
 }

@@ -9,7 +9,7 @@ import { classify } from '../engine/classify.js';
 import { buildDiagnosis } from '../engine/diagnosis.js';
 import { buildDiagnosisAr } from '../i18n/diagnosis.ar.js';
 import { saveAttempt, saveFeedback } from '../data/board.js';
-import { t, L, Lb, onLang, isAr } from '../i18n/index.js';
+import { t, L, Lb, onLang, isAr, toggleLang } from '../i18n/index.js';
 import { AR } from '../i18n/content.ar.js';
 
 const READINESS_AR = AR.readiness;
@@ -21,7 +21,8 @@ function esc(s) {
 function nameOf(entity, table) {
   if (!entity) return '';
   if (table && isAr()) {
-    const o = AR[table][entity.id];
+    const o = AR[table]?.[entity.id];
+    if (typeof o === 'string') return o;
     if (o && o.name) return o.name;
   }
   return entity.name;
@@ -63,7 +64,7 @@ function radarSvg(skills) {
     const anchor = Math.abs(x - cx) < 8 ? 'middle' : (x > cx ? 'start' : 'end');
     return `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#55555f" letter-spacing="0.5">${skillShort(s)}</text>`;
   }).join('');
-  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Skill radar chart">
+  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="${isAr() ? 'مخطط رادار المهارات' : 'Skill radar chart'}">
     ${rings}${axes}
     <polygon points="${poly}" fill="rgba(255,77,36,.18)" stroke="#ff4d24" stroke-width="2" stroke-linejoin="round"/>
     ${dots}${labels}
@@ -143,18 +144,19 @@ export function mountResults(app, { finished, onRestart, name }) {
       </div>
     </section>`;
 
+    const TAB_IDS = ['profile', 'readiness', 'diagnosis', 'roadmap', 'evidence'];
+    const tabClass = (id) => 'tab' + (activeTab === id ? ' on' : '');
     const tabs = `
     <div class="wrap">
-      <div class="tabs" id="tabs">
-        <button class="tab${activeTab === 'profile' ? ' on' : ''}" data-tab="profile">${t('tab.profile')}</button>
-        <button class="tab${activeTab === 'readiness' ? ' on' : ''}" data-tab="readiness">${t('tab.readiness')}</button>
-        <button class="tab${activeTab === 'diagnosis' ? ' on' : ''}" data-tab="diagnosis">${t('tab.diagnosis')}</button>
-        <button class="tab${activeTab === 'roadmap' ? ' on' : ''}" data-tab="roadmap">${t('tab.roadmap')}</button>
-        <button class="tab${activeTab === 'evidence' ? ' on' : ''}" data-tab="evidence">${t('tab.evidence')}</button>
+      <div class="tabs" id="tabs" role="tablist">
+        ${TAB_IDS.map(id => `
+        <button class="${tabClass(id)}" role="tab" id="tab-${id}"
+          data-tab="${id}" aria-controls="panel-${id}" aria-selected="${activeTab === id}"
+          tabindex="${activeTab === id ? 0 : -1}">${t('tab.' + id)}</button>`).join('')}
       </div>`;
 
     const profile = `
-    <section class="tabpanel" data-panel="profile"${activeTab === 'profile' ? '' : ' hidden'}>
+    <section class="tabpanel" role="tabpanel" id="panel-profile" aria-labelledby="tab-profile" data-panel="profile"${activeTab === 'profile' ? '' : ' hidden'}>
       <div class="mt-24 radar-wrap">
         <div class="radar-card">${radarSvg(cls.skills)}
           <div class="case-note">${t('prof.radarNote')}</div>
@@ -176,7 +178,7 @@ export function mountResults(app, { finished, onRestart, name }) {
     </section>`;
 
     const readiness = `
-    <section class="tabpanel" data-panel="readiness"${activeTab === 'readiness' ? '' : ' hidden'}>
+    <section class="tabpanel" role="tabpanel" id="panel-readiness" aria-labelledby="tab-readiness" data-panel="readiness"${activeTab === 'readiness' ? '' : ' hidden'}>
       <div class="mt-24 listcard">
         <h3>${t('ready.h3')}</h3>
         <div class="ring-wrap mt-16">
@@ -207,7 +209,7 @@ export function mountResults(app, { finished, onRestart, name }) {
     </section>`;
 
     const diagnosis = `
-    <section class="tabpanel" data-panel="diagnosis"${activeTab === 'diagnosis' ? '' : ' hidden'}>
+    <section class="tabpanel" role="tabpanel" id="panel-diagnosis" aria-labelledby="tab-diagnosis" data-panel="diagnosis"${activeTab === 'diagnosis' ? '' : ' hidden'}>
       <div class="mt-24 diagnosis">
         <div class="eyebrow">${t('diag.why')}</div>
         <div class="mt-16">${d.paragraphs.map(p => `<p>${p}</p>`).join('')}</div>
@@ -229,7 +231,7 @@ export function mountResults(app, { finished, onRestart, name }) {
     </section>`;
 
     const roadmap = `
-    <section class="tabpanel" data-panel="roadmap"${activeTab === 'roadmap' ? '' : ' hidden'}>
+    <section class="tabpanel" role="tabpanel" id="panel-roadmap" aria-labelledby="tab-roadmap" data-panel="roadmap"${activeTab === 'roadmap' ? '' : ' hidden'}>
       <div class="stack gap-16 mt-24">
         ${d.roadmap.map(item => `
           <article class="road-item">
@@ -252,7 +254,7 @@ export function mountResults(app, { finished, onRestart, name }) {
 
     const skillById = Object.fromEntries(SKILLS.map(s => [s.id, s]));
     const evidence = `
-    <section class="tabpanel" data-panel="evidence"${activeTab === 'evidence' ? '' : ' hidden'}>
+    <section class="tabpanel" role="tabpanel" id="panel-evidence" aria-labelledby="tab-evidence" data-panel="evidence"${activeTab === 'evidence' ? '' : ' hidden'}>
       <div class="mt-24 split">
         <div class="listcard">
           <h3>${t('ev.bands')}</h3>
@@ -279,6 +281,7 @@ export function mountResults(app, { finished, onRestart, name }) {
       <div class="row gap-10 mt-40" style="flex-wrap:wrap">
         <button class="btn" id="restart">${t('btn.restart')}</button>
         <button class="btn btn-ghost" id="printBtn">${t('btn.print')}</button>
+        <button class="btn btn-lang" id="resLangBtn" title="${t('nav.switchTitle')}">${t('nav.switch')}</button>
         <a class="btn btn-ghost" href="admin.html">${t('nav.admin')}</a>
       </div>
       <div class="listcard mt-16" style="max-width:640px">
@@ -300,12 +303,33 @@ export function mountResults(app, { finished, onRestart, name }) {
     </div></footer>`;
 
     const tabWrap = document.getElementById('tabs');
+    const selectTab = (btn) => {
+      activeTab = btn.dataset.tab;
+      tabWrap.querySelectorAll('.tab').forEach(tb => {
+        const on = tb === btn;
+        tb.classList.toggle('on', on);
+        tb.setAttribute('aria-selected', String(on));
+        tb.tabIndex = on ? 0 : -1;
+      });
+      document.querySelectorAll('.tabpanel').forEach(p => { p.hidden = p.dataset.panel !== btn.dataset.tab; });
+    };
     tabWrap.addEventListener('click', (e) => {
       const btn = e.target.closest('.tab');
-      if (!btn) return;
-      activeTab = btn.dataset.tab;
-      tabWrap.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t === btn));
-      document.querySelectorAll('.tabpanel').forEach(p => { p.hidden = p.dataset.panel !== btn.dataset.tab; });
+      if (btn) selectTab(btn);
+    });
+    tabWrap.addEventListener('keydown', (e) => {
+      const tabs = [...tabWrap.querySelectorAll('.tab')];
+      const i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      let j = null;
+      if (e.key === 'ArrowRight') j = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = tabs.length - 1;
+      if (j === null) return;
+      e.preventDefault();
+      tabs[j].focus();
+      selectTab(tabs[j]);
     });
 
     document.getElementById('restart').addEventListener('click', () => {
@@ -313,6 +337,7 @@ export function mountResults(app, { finished, onRestart, name }) {
       onRestart();
     });
     document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('resLangBtn').addEventListener('click', () => toggleLang());
 
     const fbForm = document.getElementById('fbForm');
     if (fbForm) fbForm.addEventListener('submit', (e) => {

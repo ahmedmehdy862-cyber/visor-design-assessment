@@ -87,7 +87,7 @@ function colorDirections() {
   const sub = A('Soft-baked fruit snacks with nothing to hide.', 'وجبة فواكه مخبوزة طريّة بلا إخفاء.');
   const pill = A('CERTIFIED ORGANIC', 'عضوي معتمد');
   return `
-  <div class="case-stage">
+  <div class="case-stage" role="img" aria-label="${A('Three packaging color directions for a fruit snack brand', 'ثلاثة اتجاهات لونية للتغليف لعلامة وجبة فواكه')}">
     <div class="case-col">${dir('dir-a', 'A', kicker, 'Sprout<br>Bites', sub, pill)}
       <div class="case-tag" style="margin-top:8px">${A('Direction A', 'الاتجاه أ')}</div></div>
     <div class="case-col">${dir('dir-b', 'B', kicker, 'Sprout<br>Bites', sub, pill)}
@@ -108,7 +108,7 @@ const LAYOUT_MINIS = {
 /* ---------- Case 5: brand identity system ---------- */
 function brandSystem() {
   return `
-  <div class="brand-system">
+  <div class="brand-system" role="img" aria-label="${A('Nord Kaffee brand identity system — logo, colours, type', 'نظام هوية نورد كافيه — الشعار والألوان والخطوط')}">
     <div class="bs-title">${A('Identity System — Nord Kaffee', 'نظام الهوية — نورد كافيه')}</div>
     <div class="bs-grid">
       <div class="bs-logo">NORD<i>·</i>KAFFEE</div>
@@ -126,7 +126,7 @@ function brandSystem() {
 
 function brandApplications() {
   return `
-  <div class="apps-grid">
+  <div class="apps-grid" role="img" aria-label="${A('Nord Kaffee brand applied to card, poster, social, packaging and envelope', 'تطبيقات هوية نورد كافيه على بطاقة وملصق وسوشيال وتغليف وظرف')}">
     <div class="app-tile">
       <div class="app-card"><div class="bc"><div class="bs-logo">NORD<i>·</i>KAFFEE</div></div></div>
       <div class="app-label">${A('A · Business card', 'أ · بطاقة العمل')}</div>
@@ -192,7 +192,7 @@ function campaignDirections() {
       </div>
       <div class="case-tag" style="margin-top:8px">${id}</div>
     </div>`;
-  return `<div class="case-stage">
+  return `<div class="case-stage" role="img" aria-label="${A('Three metro safety campaign directions', 'ثلاثة اتجاهات لحملة سلامة المترو')}">
     ${card('A', 'dir-a6', A('“The Numbers” — data-led warning creative.', '«الأرقام» — إبداع تحذيري مبني على البيانات.'), A('Large incident statistics over dark platform photography, red alarm palette.', 'إحصاءات حوادث كبيرة فوق صور منصة داكنة مع لوحة إنذار حمراء.'))}
     ${card('B', 'dir-b6', A('“Read the Room” — signage-derived typographic system.', '«اقرأ المكان» — نظام هجائي مستلهم من اللافتات.'), A('Modular message blocks built like metro wayfinding signage; high contrast.', 'كتل رسائل معيارية مبنية على منطق لافتات المترو؛ تباين عالٍ.'))}
     ${card('C', 'dir-c6', A('“Good Journeys” — lifestyle community creative.', '«رحلات سعيدة» — إبداع لايف ستايل مجتمعي.'), A('Warm, glossy commuter moments with a friendly tagline.', 'لحظات ركاب دافئة لامعة مع شعار ودّي.'))}
@@ -217,7 +217,7 @@ function artDirectionConcepts() {
       </div>
       <div class="case-tag" style="margin-top:8px">${id}</div>
     </div>`;
-  return `<div class="case-stage">
+  return `<div class="case-stage" role="img" aria-label="${A('Three art direction concepts for a dates brand', 'ثلاثة مفاهيم إخراج فني لعلامة تمر')}">
     ${card('A', 'dir-a7', A('“Heritage Luxury”.', '«الفخامة التراثية».'), A('Dates on veined marble, soft gold light, serif wordmark.', 'تمر على رخام بالأوردة وإضاءة ذهبية ناعمة وشعار سيريف.'))}
     ${card('B', 'dir-b7', A('“Strata”.', '«الطبقات».'), A('Dates arranged as stacked horizontal layers under one raking light, numbered I–VI.', 'تمر مصفوفة كطبقات أفقية متراصة تحت ضوء جانبي واحد، مرقمة من الأول إلى السادس.'))}
     ${card('C', 'dir-c7', A('“Kitchen Moments”.', '«لحظات المطبخ».'), A('Natural-light kitchen scenes with hands preparing desserts.', 'مشاهد مطبخ بإضاءة طبيعية بأيدٍ تحضّر الحلويات.'))}
@@ -259,7 +259,7 @@ export const VISUALS = {
   case1: overcrowdedPoster,
   case2: typoPoster,
   case3: colorDirections,
-  case4: () => `<div class="case-stage">
+  case4: () => `<div class="case-stage" role="img" aria-label="${A('Four editorial layout options shown as wireframe thumbnails', 'أربعة تركيبات تحريرية معروضة كرسوم تخطيطية')}">
       <div class="case-col"><div class="thumb-frame">${LAYOUT_MINIS.layA}</div><div class="case-tag" style="margin-top:8px">${LAYOUT_TAG('Layout A', 'التركيب أ')}</div></div>
       <div class="case-col"><div class="thumb-frame">${LAYOUT_MINIS.layB}</div><div class="case-tag" style="margin-top:8px">${LAYOUT_TAG('Layout B', 'التركيب ب')}</div></div>
       <div class="case-col"><div class="thumb-frame">${LAYOUT_MINIS.layC}</div><div class="case-tag" style="margin-top:8px">${LAYOUT_TAG('Layout C', 'التركيب ج')}</div></div>

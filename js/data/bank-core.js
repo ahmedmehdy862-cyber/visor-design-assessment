@@ -736,7 +736,7 @@ export const CORE_QUESTIONS = [
       { id: 'a', title: 'Re-solve the hierarchy so the disclaimer has a legitimate place — treat it as a design constraint, not an intrusion', desc: 'Absorb constraints into the system.', q: 1 },
       { id: 'b', title: 'Shrink it slightly and hope it passes', desc: 'Preserve the design.', q: .3 },
       { id: 'c', title: 'Push the disclaimer into the corner at minimum size', desc: 'Comply in form only.', q: .5 },
-      { id: 'd', title: 'Remove secondary content to make room without changing the headline', desc: 'Cut elsewhere.', q: .75 },
+      { id: 'd', title: 'Remove secondary content to make room without changing the headline', desc: 'Cut elsewhere.', q: .6 },
     ],
     correct: ['a'],
     purpose: 'Constraint handling: redesign vs workaround.',

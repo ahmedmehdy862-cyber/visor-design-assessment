@@ -17,7 +17,7 @@ export const UI = {
     'nav.switchTitle': 'Switch to Arabic',
 
     /* landing */
-    'hero.eyebrow': 'Professional assessment · Not a quiz',
+    'hero.eyebrow': 'Professional level placement · Not a quiz',
     'hero.title.a': 'Measure how a designer ',
     'hero.title.em': 'thinks',
     'hero.title.b': ', not what they can recite.',
@@ -201,7 +201,7 @@ export const UI = {
     'q.counter': 'Question {n} of up to {max}',
     'q.back': '← Previous question',
     'q.end': 'End & see results',
-    'q.unlock': '{n}/{of} answered to unlock early end',
+    'q.unlock': 'Early end unlocks at {of} answers — {left} to go',
     'q.caseStudy': 'Visual case study',
     'q.item': 'Assessment item',
     'q.examine': 'Examine closely',
@@ -212,9 +212,16 @@ export const UI = {
     'q.reasonPh': 'I chose this because…',
     'q.reasonEval': 'Your reasoning is evaluated — be specific.',
     'q.choose': 'Choose the strongest answer.',
-    'q.keys': 'keys {a}–{b} (or {c}–{d}) to select · Enter / → to continue',
+    'q.keys': 'Keys {a}–{b} (or {c}–{d}) to select · Enter / → to continue',
     'q.confirm': 'Confirm selection',
     'q.continue': 'Continue',
+
+    /* saved run / resume */
+    'run.banner': 'You left an assessment unfinished — resume where you stopped?',
+    'run.at': 'Stopped at question {n}',
+    'run.resume': 'Resume',
+    'run.discard': 'Discard & start over',
+    'q.progressLabel': 'Assessment progress',
 
     /* analysis */
     'analysis.eyebrow': 'Step 3 of 3',
@@ -307,7 +314,7 @@ export const UI = {
     'nav.switchTitle': 'التبديل إلى الإنجليزية',
 
     /* landing */
-    'hero.eyebrow': 'تقييم مهني · وليس اختبارًا',
+    'hero.eyebrow': 'تحديد المستوى المهني · وليس اختبارًا',
     'hero.title.a': 'قيّم كيف ',
     'hero.title.em': 'يفكّر',
     'hero.title.b': ' المصمم، لا ما يستطيع حفظه.',
@@ -491,7 +498,7 @@ export const UI = {
     'q.counter': 'السؤال {n} من {max} كحد أقصى',
     'q.back': 'السؤال السابق →',
     'q.end': 'إنهاء وعرض النتيجة',
-    'q.unlock': '{n}/{of} إجابة لفتح الإنهاء المبكر',
+    'q.unlock': 'يُفتح الإنهاء المبكر عند {of} إجابة — تبقّى {left}',
     'q.caseStudy': 'دراسة حالة بصرية',
     'q.item': 'بند تقييم',
     'q.examine': 'راقب بعناية',
@@ -505,6 +512,13 @@ export const UI = {
     'q.keys': 'المفاتيح {a}–{b} (أو {c}–{d}) للاختيار · Enter / → للمتابعة',
     'q.confirm': 'تأكيد الاختيار',
     'q.continue': 'متابعة',
+
+    /* saved run / resume */
+    'run.banner': 'لديك تقييم غير مكتمل — هل تستأنف من حيث توقفت؟',
+    'run.at': 'توقفت عند السؤال {n}',
+    'run.resume': 'استئناف',
+    'run.discard': 'تجاهل وابدأ من جديد',
+    'q.progressLabel': 'تقدّم التقييم',
 
     /* analysis */
     'analysis.eyebrow': 'الخطوة 3 من 3',

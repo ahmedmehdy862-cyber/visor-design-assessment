@@ -94,7 +94,7 @@
   background: var(--paper-2); color: var(--ink-3); border-radius: 4px; padding: 3px 6px;
 }
 .rskill[data-skill="typography"], .rskill[data-skill="color"] { background: rgba(31,75,255,.08); color: var(--blue); }
-.rskill[data-skill="artDirection"], .rskill[data-skill="leadership"] { background: rgba(255,77,36,.1); color: var(--accent); }
+.rskill[data-skill="artDirection"], .rskill[data-skill="leadership"] { background: rgba(255,77,36,.1); color: var(--accent-ink); }
 .rdiff { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
 .rtype { font-family: var(--mono); font-size: 9px; letter-spacing: .08em; padding: 3px 6px; border-radius: 4px; }
 .rtype.single { background: #eef4ff; color: var(--blue); }
@@ -122,7 +122,7 @@
 
 .editor-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
 .editor-head b { font-family: var(--mono); font-size: 15px; }
-.editor-head span { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-top: 4px; }
+.editor-head span { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin-top: 4px; }
 
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
 .form-grid .span2 { grid-column: span 2; }

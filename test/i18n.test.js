@@ -57,6 +57,26 @@ ok(t('meta.1.s').includes('مستويات'), 'meta text localized');
 ok(t('adm.save') !== 'adm.save' && /[\u0600-\u06FF]/.test(t('adm.save')), 'admin chrome resolves in Arabic');
 ok(t('adm.imported', { n: 5 }).includes('5'), 'admin toast interpolates in Arabic');
 
+/* run-resume keys exist in both languages */
+setLang('en');
+ok(t('run.banner').includes('unfinished'), 'run.banner resolves in English');
+ok(t('run.at', { n: 7 }) === 'Stopped at question 7', 'run.at interpolates in English');
+ok(t('run.resume') === 'Resume', 'run.resume resolves in English');
+ok(t('run.discard').startsWith('Discard'), 'run.discard resolves in English');
+ok(t('q.progressLabel') === 'Assessment progress', 'q.progressLabel resolves in English');
+setLang('ar');
+ok(/[\u0600-\u06FF]/.test(t('run.banner')), 'run.banner resolves in Arabic');
+ok(t('run.at', { n: 7 }).includes('7'), 'run.at interpolates in Arabic');
+ok(/[\u0600-\u06FF]/.test(t('run.resume')), 'run.resume resolves in Arabic');
+ok(/[\u0600-\u06FF]/.test(t('run.discard')), 'run.discard resolves in Arabic');
+ok(/[\u0600-\u06FF]/.test(t('q.progressLabel')), 'q.progressLabel resolves in Arabic');
+setLang('en');
+ok(t('q.unlock', { left: 3, of: 15 }) === 'Early end unlocks at 15 answers — 3 to go', 'early-end hint is a clear countdown in English');
+ok(t('hero.eyebrow').includes('level placement'), 'hero frames the product as level placement');
+setLang('ar');
+ok(t('q.unlock', { left: 3 }).includes('3'), 'early-end hint interpolates in Arabic');
+setLang('ar'); /* leave Arabic, as the jsdom boot below expects to switch to English */
+
 /* fallback when no Arabic overlay exists for a question */
 const cn01 = byId['cn-01'];
 const enPrompt = cn01.prompt;

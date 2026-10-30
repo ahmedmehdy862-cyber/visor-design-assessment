@@ -138,10 +138,19 @@ const results = {};
   for (const p of c.readiness.parts) {
     assert.ok(p.value === null || (p.value >= 0 && p.value <= 100), 'readiness part range');
   }
+  /* track weights must be normalised or track scores can exceed 100 */
+  const { TRACKS } = await import('../js/data/skills.js');
+  for (const t of TRACKS) {
+    const sum = Object.values(t.weights).reduce((a, b) => a + b, 0);
+    assert.ok(Math.abs(sum - 1) < 0.001, `track weights normalised: ${t.id} sums to ${sum.toFixed(3)}`);
+  }
+  for (const t of c.tracks.all) {
+    assert.ok(t.score >= 0 && t.score <= 100, `track score in range: ${t.id} = ${t.score}`);
+  }
   const diag = buildDiagnosis(c);
   assert.ok(diag.paragraphs.join(' ').length > 200, 'diagnosis must be substantial');
   assert.strictEqual(diag.roadmap.length, 3, 'roadmap has 3 items');
-  console.log('✓ scoring internals + diagnosis OK');
+  console.log('✓ scoring internals + diagnosis OK (track weights normalised)');
 }
 
 /* 6 — evidence discipline: no level above mid without multi-skill evidence */

@@ -11,6 +11,7 @@ import { mountResults } from './ui/results.js';
 import { renderVisual } from './ui/visuals.js';
 import { LEVELS, SKILLS, TRACKS } from './data/skills.js';
 import { loadAttempts, loadFeedback, saveFeedback } from './data/board.js';
+import { loadRun, clearRun } from './data/run.js';
 import { initLang, toggleLang, onLang, t, L, QL, QOpt, isAr } from './i18n/index.js';
 
 initLang();
@@ -114,6 +115,7 @@ function renderBoard() {
 /* ---------------- LANDING ---------------- */
 function renderLanding() {
   paint = renderLanding;
+  const saved = loadRun();
   const levels = LEVELS.map(l => `<span class="level-chip">${L(l, 'name', 'levels')}</span>`).join('');
   const skillCards = SKILLS.map((s, i) => `
     <div class="card">
@@ -134,6 +136,14 @@ function renderLanding() {
           <button class="btn btn-accent btn-lg" id="startBtn">${t('hero.cta')}</button>
           <span class="qhint">${t('hero.hint')}</span>
         </div>
+        ${saved ? `
+        <div class="run-resume">
+          <span>${t('run.banner')}<br><small class="muted">${t('run.at', { n: saved.current.index })}</small></span>
+          <span class="row gap-10">
+            <button class="btn btn-accent btn-sm" id="resumeBtn">${t('run.resume')}</button>
+            <button class="btn btn-ghost btn-sm" id="discardBtn">${t('run.discard')}</button>
+          </span>
+        </div>` : ''}
         <div class="metastrip">
           <div><b>${t('meta.1.b')}</b><span>${t('meta.1.s')}</span></div>
           <div><b>${t('meta.2.b')}</b><span>${t('meta.2.s')}</span></div>
@@ -234,6 +244,10 @@ function renderLanding() {
   document.getElementById('startBtn').onclick = renderSetup;
   document.getElementById('startBtn2').onclick = renderSetup;
   document.getElementById('retakeBtn').onclick = renderSetup;
+  if (saved) {
+    document.getElementById('resumeBtn').onclick = () => startAssessment(saved.experience, saved.name || '', saved);
+    document.getElementById('discardBtn').onclick = () => { clearRun(); renderLanding(); };
+  }
   const gbForm = document.getElementById('gbForm');
   if (gbForm) gbForm.addEventListener('submit', (e) => { e.preventDefault(); postGuestbook(); });
 }
@@ -320,7 +334,7 @@ function renderAnalyzing(finished, onComplete) {
     i++;
     if (i < lines.length) { el.textContent = lines[i]; }
     else { clearInterval(tm); onComplete(); }
-  }, 430);
+  }, 330);
 }
 
 /* ---------------- PRACTICAL CHALLENGE (optional) ---------------- */
@@ -430,10 +444,12 @@ function createPracticalView(session, onFinish) {
 }
 
 /* ---------------- FLOW CONTROL ---------------- */
-function startAssessment(experience, name) {
+function startAssessment(experience, name, resume = null) {
   paint = () => {};  /* assessment repaints itself via its own onLang */
   mountAssessment(app, {
     experience,
+    name,
+    resume,
     onFinish(session) {
       const view = createPracticalView(session, () => {
         const finished = session.finish();
